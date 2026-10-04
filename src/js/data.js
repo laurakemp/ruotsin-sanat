@@ -9,6 +9,8 @@ export async function loadList() {
   return {
     ...list,
     forms: list.forms ?? DEFAULT_FORMS,
+    formHints: list.formHints ?? [],
+    example: list.example ?? null,
     words: list.words.map((word) => ({
       fi: word.fi,
       sv: Array.isArray(word.sv) ? word.sv : [word.sv],

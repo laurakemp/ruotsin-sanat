@@ -27,7 +27,15 @@ julkaistaan GitHub Pagesiin: https://laurakemp.github.io/ruotsin-sanat/
 - **Harjoittelu:** `ROUND_SIZE` sanaa (oletus 10), vaikeimmat ensin (vähiten
   tähtiä, eniten virheitä). Tehtävätyyppi arvotaan jokaiselle sanalle sen
   osaamisen mukaan (`MODES_BY_STARS` tiedostossa `quiz.js`): Opettele (kortti),
-  Monivalinta, Kirjoita yksi muoto tai Kirjoita kaikki muodot. Lopuksi väärin
+  Järjestys (napauta muodot kirjan järjestykseen), Monivalinta, Kirjoita yksi
+  muoto tai Kirjoita kaikki muodot.
+- **Pidä oppiminen yksinkertaisena.** Tavoite on, että verbin rivi jää mieleen
+  kirjan järjestyksessä. Muodot numeroidaan (1.–4.), ja kun kysytään yhtä
+  muotoa, näytetään aina lyhyt selitys (`formHints`) ja kirjan rivi, jossa
+  kysytyn muodon paikalla on "?". Monivalinnassa rivillä näkyvät muut muodot,
+  ja väärät vaihtoehdot ovat muiden verbien samaa muotoa. Etusivun "Mitä muodot
+  tarkoittavat?" selittää muodot esimerkin (`example`) avulla.
+- Erillisiä å/ä/ö-nappeja ei tarvita, koska suomalaisessa näppäimistössä ne ovat. Lopuksi väärin
   menneet kerrataan kirjoittaen, kunnes ne menevät oikein.
 - **Harjoituskoe** (`…/#koe`, oma linkki): kaikkien sanojen kaikki muodot kirjoittaen,
   ei palautetta kesken kokeen. Lopuksi näkyy, mitkä menivät oikein ja mitkä
@@ -81,6 +89,12 @@ docs/                 Ohjeet Lauralle
   "id": "verbit-be-heta",
   "title": "Epäsäännöllisiä verbejä",
   "forms": ["perusmuoto", "preesens", "imperfekti", "supiini"],
+  "formHints": ["sanakirjamuoto, esim. juoda", "tapahtuu nyt, esim. juo",
+                "tapahtui ennen, esim. joi", "har + muoto = on tehnyt, esim. on juonut"],
+  "example": {
+    "sv": ["dricka", "dricker", "drack", "druckit"],
+    "fi": ["juoda", "juo", "joi", "on juonut (har druckit)"]
+  },
   "words": [
     { "fi": "pyytää; rukoilla", "sv": ["be", "ber", "bad", "bett"] },
     { "fi": "antaa", "sv": ["ge", "ger", "gav", "gett/givit"] }
@@ -104,7 +118,8 @@ Laura lähettää kuvan kirjan sanastosivusta. Tee näin:
 
 1. Litteroi kaikki sanat kuvasta tarkasti, myös å/ä/ö. Jos jokin kohta on
    epäselvä tai rajautuu kuvan ulkopuolelle, kysy Lauralta.
-2. Korvaa `src/data/words.json` kokonaan uudella listalla ja uudella `id`:llä.
+2. Korvaa `src/data/words.json`:n `id`, `title` ja `words` uusilla. Säilytä
+   `forms`, `formHints` ja `example`, jos uudet sanat ovat myös verbejä.
 3. Aja `node scripts/validate-words.mjs`.
 4. Näytä Lauralle lista tarkistettavaksi (suomi – ruotsin muodot).
 5. Commit ("Vaihda sanalista: <kuvaus>") ja push `main`-haaraan.

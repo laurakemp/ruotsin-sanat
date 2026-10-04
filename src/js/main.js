@@ -62,6 +62,15 @@ function formsText(word) {
   return word.sv.map(formatAnswer).join(", ");
 }
 
+// Muodot numeroidaan kirjan järjestyksessä: "4. supiini".
+function formName(i) {
+  return list.forms.length > 1 ? `${i + 1}. ${list.forms[i]}` : list.forms[i];
+}
+
+function formHint(i) {
+  return list.formHints[i] ?? "";
+}
+
 // ---------- Käynnistys, PIN ja reititys ----------
 
 async function init() {
@@ -137,6 +146,21 @@ function goalMessage(learned, total) {
 
 $("start-btn").addEventListener("click", () => startPractice());
 
+$("help-btn").addEventListener("click", () => {
+  const example = list.example;
+  $("help-example-row").textContent = example ? example.sv.join(" – ") : "";
+  $("help-forms").replaceChildren(
+    ...list.forms.map((_, i) => {
+      const item = el("li", "help-form");
+      item.append(el("strong", "", list.forms[i]));
+      if (example) item.append(el("span", "help-sv", `${example.sv[i]} = ${example.fi[i]}`));
+      item.append(el("span", "muted", formHint(i)));
+      return item;
+    }),
+  );
+  showScreen("help");
+});
+
 $("wordlist-btn").addEventListener("click", () => {
   $("word-table").replaceChildren(
     ...list.words.map((word) => {
@@ -206,20 +230,46 @@ function showQuestion() {
   $("question-label").textContent = questionLabel(q);
   $("feedback").hidden = true;
 
+  showFormHelp(q);
   $("mode-learn").hidden = q.mode !== "learn";
+  $("mode-order").hidden = q.mode !== "order";
   $("mode-choice").hidden = q.mode !== "choice";
   $("mode-write").hidden = q.mode !== "one" && q.mode !== "all";
 
   if (q.mode === "learn") showLearn(q);
+  if (q.mode === "order") showOrder(q);
   if (q.mode === "choice") showChoices(q);
   if (q.mode === "one" || q.mode === "all") showWriteFields(q);
 }
 
 function questionLabel(q) {
   if (q.mode === "learn") return "Muistatko muodot?";
-  if (q.mode === "choice") return `Valitse ${list.forms[q.formIndex]}`;
-  if (q.mode === "one") return `Kirjoita ${list.forms[q.formIndex]}`;
+  if (q.mode === "order") return "Laita muodot järjestykseen";
+  if (q.mode === "choice") return `Valitse ${formName(q.formIndex)}`;
+  if (q.mode === "one") return `Kirjoita ${formName(q.formIndex)}`;
   return "Kirjoita kaikki muodot ruotsiksi";
+}
+
+// Näyttää kirjan rivin, jossa kysytyn muodon paikalla on kysymysmerkki, ja
+// selittää lyhyesti, mitä muoto tarkoittaa.
+function showFormHelp(q) {
+  const asksOneForm = q.formIndex !== null && list.forms.length > 1;
+  $("form-pattern").hidden = !asksOneForm;
+  $("question-hint").hidden = !asksOneForm && q.mode !== "order";
+
+  if (q.mode === "order") {
+    $("question-hint").textContent = `Järjestys kuten kirjassa: ${list.forms.join(" – ")}`;
+  }
+  if (!asksOneForm) return;
+
+  // Monivalinnassa näytetään muut muodot apuna, kirjoittaessa vain paikat.
+  $("form-pattern").replaceChildren(
+    ...list.forms.map((_, i) => {
+      if (i === q.formIndex) return el("span", "slot slot-target", "?");
+      return el("span", "slot", q.mode === "choice" ? formatAnswer(q.word.sv[i]) : `${i + 1}.`);
+    }),
+  );
+  $("question-hint").textContent = `${list.forms[q.formIndex]}: ${formHint(q.formIndex)}`;
 }
 
 function updateStreak() {
@@ -293,9 +343,9 @@ function nextQuestion() {
 
 function showLearn(q) {
   $("learn-forms").replaceChildren(
-    ...list.forms.map((formName, i) => {
+    ...list.forms.map((_, i) => {
       const cell = el("div", "form-cell");
-      cell.append(el("span", "form-name", formName), el("strong", "form-value", formatAnswer(q.word.sv[i])));
+      cell.append(el("span", "form-name", formName(i)), el("strong", "form-value", formatAnswer(q.word.sv[i])));
       return cell;
     }),
   );
@@ -318,6 +368,53 @@ $("knew-btn").addEventListener("click", () => {
 $("again-btn").addEventListener("click", () => {
   registerAnswer(false);
   nextQuestion();
+});
+
+// ---------- Järjestys ----------
+// Oppilas napauttaa muodot kirjan järjestyksessä. Kun kaikki on valittu,
+// vastaus tarkistetaan.
+
+function showOrder(q) {
+  q.picked = [];
+  renderOrder(q);
+}
+
+function renderOrder(q, checked = false) {
+  $("order-slots").replaceChildren(
+    ...list.forms.map((_, pos) => {
+      const picked = q.picked[pos];
+      const slot = el("li", "order-slot");
+      slot.append(el("span", "order-name", formName(pos)));
+      slot.append(el("strong", "", picked === undefined ? "" : formatAnswer(q.word.sv[picked])));
+      if (checked) slot.classList.add(q.word.sv[picked] === q.word.sv[pos] ? "is-correct" : "is-wrong");
+      return slot;
+    }),
+  );
+  $("order-chips").replaceChildren(
+    ...q.shuffled.map((formIndex) => {
+      const chip = el("button", "btn chip-btn", formatAnswer(q.word.sv[formIndex]));
+      chip.disabled = checked || q.picked.includes(formIndex);
+      chip.addEventListener("click", () => pickOrder(q, formIndex));
+      return chip;
+    }),
+  );
+  $("order-reset").hidden = checked || q.picked.length === 0;
+}
+
+function pickOrder(q, formIndex) {
+  q.picked.push(formIndex);
+  if (q.picked.length < list.forms.length) return renderOrder(q);
+
+  const correct = q.picked.every((picked, pos) => q.word.sv[picked] === q.word.sv[pos]);
+  renderOrder(q, true);
+  const result = registerAnswer(correct);
+  showFeedback(correct, result, correct ? formsText(q.word) : `Oikea järjestys: ${formsText(q.word)}.`);
+}
+
+$("order-reset").addEventListener("click", () => {
+  const q = current();
+  q.picked = [];
+  renderOrder(q);
 });
 
 // ---------- Monivalinta ----------
@@ -353,7 +450,9 @@ function showWriteFields(q) {
   const formIndexes = q.formIndex !== null ? [q.formIndex] : list.forms.map((_, i) => i);
   const fields = formIndexes.map((formIndex) => {
     const wrap = el("label", "field");
-    wrap.append(el("span", "field-label", list.forms[formIndex]));
+    const label = el("span", "field-label", formName(formIndex));
+    if (formHint(formIndex)) label.append(el("span", "field-hint", ` · ${formHint(formIndex)}`));
+    wrap.append(label);
     const input = el("input", "input");
     Object.assign(input, { type: "text", autocapitalize: "off", spellcheck: false, autocomplete: "off" });
     input.setAttribute("autocorrect", "off");
@@ -364,7 +463,6 @@ function showWriteFields(q) {
 
   $("write-fields").replaceChildren(...fields);
   $("check-btn").hidden = false;
-  $("letter-bar").hidden = false;
   $("check-btn").textContent = checkButtonText();
   fields[0].querySelector("input").focus();
 }
@@ -411,27 +509,11 @@ $("mode-write").addEventListener("submit", (event) => {
   }
 
   $("check-btn").hidden = true;
-  $("letter-bar").hidden = true;
   const result = registerAnswer(allCorrect);
   const starNote = session.starsEarned.has(q.word.fi) ? `Sanalle tähti! ${starsText(starsOf(q.word))}` : null;
   showFeedback(allCorrect, result, allCorrect ? starNote : "Katso oikeat muodot yllä.");
   if (allCorrect) $("prompt-stars").textContent = starsText(starsOf(q.word));
 });
-
-// Å, Ä ja Ö -napit lisäävät kirjaimen viimeksi valittuun kenttään.
-let lastInput = null;
-$("write-fields").addEventListener("focusin", (event) => {
-  lastInput = event.target;
-});
-
-for (const button of document.querySelectorAll(".letter-btn")) {
-  button.addEventListener("pointerdown", (event) => event.preventDefault()); // pitää näppäimistön auki
-  button.addEventListener("click", () => {
-    if (!lastInput || lastInput.disabled) return;
-    lastInput.setRangeText(button.dataset.char, lastInput.selectionStart, lastInput.selectionEnd, "end");
-    lastInput.focus();
-  });
-}
 
 // ---------- Kertaus harjoittelun lopuksi ----------
 

@@ -2,6 +2,16 @@
   "id": "verbit-be-heta",
   "title": "Epäsäännöllisiä verbejä",
   "forms": ["perusmuoto", "preesens", "imperfekti", "supiini"],
+  "formHints": [
+    "sanakirjamuoto, esim. juoda",
+    "tapahtuu nyt, esim. juo",
+    "tapahtui ennen, esim. joi",
+    "har + muoto = on tehnyt, esim. on juonut"
+  ],
+  "example": {
+    "sv": ["dricka", "dricker", "drack", "druckit"],
+    "fi": ["juoda", "juo", "joi", "on juonut (har druckit)"]
+  },
   "words": [
     { "fi": "pyytää; rukoilla", "sv": ["be", "ber", "bad", "bett"] },
     { "fi": "kutsua; tarjota", "sv": ["bjuda", "bjuder", "bjöd", "bjudit"] },

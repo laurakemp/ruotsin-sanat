@@ -42,7 +42,10 @@
         <h2 id="list-title"></h2>
         <div class="progress-track" aria-hidden="true"><div id="learned-bar" class="progress-fill"></div></div>
         <p class="goal-meta"><strong id="learned-count">0 / 0</strong> opittu <span id="goal-message" class="muted"></span></p>
-        <button id="wordlist-btn" class="btn btn-ghost">Näytä sanalista →</button>
+        <div class="link-row">
+          <button id="wordlist-btn" class="btn btn-ghost">Näytä sanalista →</button>
+          <button id="help-btn" class="btn btn-ghost">Mitä muodot tarkoittavat?</button>
+        </div>
       </div>
 
       <button id="start-btn" class="btn btn-primary btn-hero">
@@ -73,6 +76,21 @@
       <ul id="word-table" class="word-table"></ul>
     </section>
 
+    <!-- ========== MUOTOJEN SELITYS ========== -->
+    <section id="screen-help" class="screen" hidden>
+      <header class="topbar">
+        <button class="icon-btn home-link" aria-label="Takaisin">←</button>
+        <h1 class="topbar-title">Verbin neljä muotoa</h1>
+        <span class="icon-spacer"></span>
+      </header>
+      <div class="card stack">
+        <p>Jokaisesta verbistä opetellaan neljä muotoa <strong>aina samassa järjestyksessä</strong> kuin kirjassa:</p>
+        <p id="help-example-row" class="example-row"></p>
+        <ol id="help-forms" class="help-forms"></ol>
+        <p class="muted">💡 Lue rivi ääneen monta kertaa, niin se jää mieleen kuin loru.</p>
+      </div>
+    </section>
+
     <!-- ========== HARJOITUS JA KOE ========== -->
     <section id="screen-quiz" class="screen" hidden>
       <header class="quiz-bar">
@@ -88,6 +106,15 @@
         <p id="question-label" class="eyebrow"></p>
         <p id="prompt" class="prompt"></p>
         <p id="prompt-stars" class="stars" aria-hidden="true"></p>
+        <div id="form-pattern" class="form-pattern" hidden></div>
+        <p id="question-hint" class="question-hint" hidden></p>
+      </div>
+
+      <!-- Järjestys -->
+      <div id="mode-order" class="stack" hidden>
+        <ol id="order-slots" class="order-slots"></ol>
+        <div id="order-chips" class="order-chips"></div>
+        <button id="order-reset" class="btn btn-ghost">Aloita alusta</button>
       </div>
 
       <!-- Opettele -->
@@ -106,11 +133,6 @@
       <!-- Kirjoitus (yksi tai kaikki muodot) -->
       <form id="mode-write" class="stack" autocomplete="off" hidden>
         <div id="write-fields" class="stack"></div>
-        <div id="letter-bar" class="letter-bar" aria-label="Ruotsin kirjaimet">
-          <button type="button" class="letter-btn" data-char="å">å</button>
-          <button type="button" class="letter-btn" data-char="ä">ä</button>
-          <button type="button" class="letter-btn" data-char="ö">ö</button>
-        </div>
         <button id="check-btn" type="submit" class="btn btn-primary">Tarkista</button>
       </form>
 

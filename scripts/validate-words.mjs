@@ -21,6 +21,10 @@ if (!list.title) errors.push('Puuttuu "title".');
 const forms = list.forms ?? ["ruotsiksi"];
 if (!Array.isArray(forms) || forms.length === 0) errors.push('"forms" pitää olla taulukko.');
 
+if (list.formHints && list.formHints.length !== forms.length) {
+  errors.push(`"formHints" tarvitsee ${forms.length} selitystä, yhden kullekin muodolle.`);
+}
+
 if (!Array.isArray(list.words) || list.words.length < 2) {
   errors.push("Listassa pitää olla vähintään 2 sanaa.");
 } else {

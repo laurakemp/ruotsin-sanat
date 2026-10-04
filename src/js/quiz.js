@@ -9,6 +9,7 @@ const ARTICLES = ["en", "ett"];
 export const MODES = {
   learn: { points: 2 },
   choice: { points: 5 },
+  order: { points: 5 },
   one: { points: 10 },
   all: { points: 20 },
 };
@@ -16,8 +17,8 @@ export const MODES = {
 // Harjoittelussa tehtävätyyppi arvotaan sanan osaamisen mukaan: uusille
 // sanoille helpompia, osatuille vaikeampia.
 const MODES_BY_STARS = [
-  ["learn", "choice", "one", "all"],
-  ["choice", "one", "all"],
+  ["learn", "order", "choice", "one", "all"],
+  ["order", "choice", "one", "all"],
   ["one", "all"],
   ["one", "all"],
 ];
@@ -58,16 +59,26 @@ export function buildQuestion(word, mode, formCount, allWords) {
   const formIndex = mode === "choice" || mode === "one" ? Math.floor(Math.random() * formCount) : null;
   const question = { word, mode, formIndex };
   if (mode === "choice") question.choices = buildChoices(word, formIndex, allWords);
+  if (mode === "order") question.shuffled = shuffledOrder(formCount);
   return question;
 }
 
-// Väärät vaihtoehdot ovat saman sanan muita muotoja ja muiden sanojen samaa
-// muotoa, koska juuri ne menevät helposti sekaisin.
+// Muotojen järjestys sekaisin, mutta ei koskaan valmiiksi oikein.
+function shuffledOrder(count) {
+  const indexes = [...Array(count).keys()];
+  if (count < 2) return indexes;
+  let result;
+  do result = shuffle(indexes);
+  while (result.every((value, i) => value === i));
+  return result;
+}
+
+// Väärät vaihtoehdot ovat muiden sanojen samaa muotoa. Saman sanan muita
+// muotoja ei käytetä, koska ne näkyvät jo kysymyksen kirjan rivillä.
 function buildChoices(word, formIndex, allWords) {
   const correct = word.sv[formIndex];
-  const sameWord = word.sv.filter((_, i) => i !== formIndex);
   const sameForm = allWords.filter((w) => w !== word).map((w) => w.sv[formIndex]);
-  const wrong = [...new Set(shuffle([...sameWord, ...shuffle(sameForm)]))]
+  const wrong = [...new Set(shuffle(sameForm))]
     .filter((option) => option !== correct)
     .slice(0, CHOICE_COUNT - 1);
   return shuffle([correct, ...wrong]);
