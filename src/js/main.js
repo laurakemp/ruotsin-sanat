@@ -551,7 +551,8 @@ function showExamResult() {
 
   const wrongWords = results.filter((r) => !r.ok).map((r) => r.word);
   $("exam-review-btn").hidden = wrongWords.length === 0;
-  $("exam-review-sub").textContent = `${wrongWords.length} sanaa, jotka menivät väärin`;
+  $("exam-review-sub").textContent =
+    wrongWords.length === 1 ? "1 sana, joka meni väärin" : `${wrongWords.length} sanaa, jotka menivät väärin`;
 
   // Väärin menneet ensin, jotta ne huomaa heti.
   const sorted = [...results].sort((a, b) => a.ok - b.ok);
