@@ -14,6 +14,25 @@ julkaistaan GitHub Pagesiin: https://laurakemp.github.io/ruotsin-sanat/
 - Käyttöliittymän ja ohjeiden kieli on suomi. Noudata suomen kielen
   oikeinkirjoitusta (yhdyssanat, pilkutus).
 
+## Oppimisen malli
+
+- Koe on muotoa: suomenkielinen sana annetaan, ja oppilas kirjoittaa ruotsiksi.
+  Siksi harjoitus kulkee aina suunnassa suomi → ruotsi.
+- Nykyiset sanat ovat **epäsäännöllisiä verbejä** neljässä muodossa:
+  perusmuoto, preesens, imperfekti ja supiini.
+- Sovelluksessa on aina **yksi ajankohtainen sanalista**. Kun opettaja antaa
+  uudet sanat, vanha lista korvataan kokonaan. Vanhoja listoja ei säilytetä.
+- Neljä harjoitustapaa helpoimmasta vaikeimpaan (`MODES` tiedostossa `quiz.js`):
+  Opettele (kortit, itsearvio), Monivalinta, Kirjoita muoto ja Koe (kaikki
+  muodot kirjoittaen).
+- Kierros on `ROUND_SIZE` sanaa (oletus 10), heikoimmin osatut ensin. Väärin
+  mennyt sana palaa kierroksen loppuun, kunnes se menee oikein.
+- Kannustus: pisteet, putkibonus, päiväputki ja sanakohtaiset tähdet (0–3).
+  Tähden saa vain Koe-tilassa, kun kaikki muodot menevät oikein ensimmäisellä
+  yrityksellä. Väärä vastaus vie tähden. Kolme tähteä = opittu.
+- Edistyminen tallentuu puhelimen `localStorage`en. Tähdet on avainnettu listan
+  `id`:llä, joten uusi lista alkaa puhtaalta pöydältä, mutta pisteet säilyvät.
+
 ## Tekniikka
 
 - Pelkkä HTML, CSS ja JavaScript (ES-moduulit). **Ei build-vaihetta, ei
@@ -25,14 +44,17 @@ julkaistaan GitHub Pagesiin: https://laurakemp.github.io/ruotsin-sanat/
 
 ```
 src/                  Julkaistava sovellus (GitHub Pages julkaisee tämän kansion)
-  index.html          Kaikki näkymät (PIN, valikko, harjoitus, tulokset)
+  index.html          Kaikki näkymät (PIN, etusivu, sanalista, harjoitus, tulokset)
   css/styles.css      Tyylit, värit muuttujina :root-lohkossa, tumma tila mukana
-  js/main.js          Käyttöliittymä: näkymien vaihto ja tapahtumat
+  js/main.js          Käyttöliittymä: näkymien vaihto ja harjoituksen kulku
   js/quiz.js          Harjoituslogiikka ilman DOMia (kysymykset, tarkistus)
+  js/progress.js      Pisteet, tähdet ja päiväputki
+  js/data.js          Sanalistan lataus ja muodon yhtenäistys
+  js/confetti.js      Konfetti onnistumisesta
   js/pin.js           Kevyt PIN-kysely
   js/storage.js       localStorage-kääre (virheet niellään)
-  js/config.js        Asetukset (PIN_HASH, vaihtoehtojen määrä)
-  data/words.json     Sanalistat
+  js/config.js        Asetukset (PIN_HASH, kierroksen koko, bonukset)
+  data/words.json     Ajankohtainen sanalista
 scripts/              Apuskriptit (Node), eivät mene julkaisuun
   validate-words.mjs  Tarkistaa words.json-tiedoston muodon
   pin-hash.mjs        Laskee PIN-tiivisteen config.js-tiedostoon
@@ -44,20 +66,36 @@ docs/                 Ohjeet Lauralle
 
 ```json
 {
-  "lists": [
-    {
-      "id": "kappale-1",
-      "name": "Kappale 1",
-      "words": [{ "fi": "koira", "sv": "en hund" }]
-    }
+  "id": "verbit-be-heta",
+  "title": "Epäsäännöllisiä verbejä",
+  "forms": ["perusmuoto", "preesens", "imperfekti", "supiini"],
+  "words": [
+    { "fi": "pyytää; rukoilla", "sv": ["be", "ber", "bad", "bett"] },
+    { "fi": "antaa", "sv": ["ge", "ger", "gav", "gett/givit"] }
   ]
 }
 ```
 
-- `id` on yksilöllinen, pienillä kirjaimilla, ei välilyöntejä.
-- Ruotsin substantiiveihin kirjoitetaan artikkeli (`en`/`ett`). Kirjoitusharjoitus
-  hyväksyy vastauksen ilman artikkelia "melkein oikeana".
+- `id`: **anna jokaiselle uudelle listalle uusi id** (esim. listan ensimmäinen ja
+  viimeinen verbi), jotta tähdet alkavat alusta.
+- `fi`: suomennos kuten kirjassa. Useat merkitykset puolipisteellä tai pilkulla.
+- `sv`: yhtä monta muotoa kuin `forms`-taulukossa. Vaihtoehtoiset oikeat
+  vastaukset erotetaan vinoviivalla (`gett/givit`), jolloin kumpikin hyväksytään.
+- Jos lista on tavallisia sanoja eikä verbejä, `forms` voi olla
+  `["ruotsiksi"]` ja `sv` pelkkä merkkijono. Substantiiveihin kirjoitetaan
+  artikkeli (`en`/`ett`), ja vastaus ilman artikkelia hyväksytään muistutuksella.
 - Tarkista muutoksen jälkeen: `node scripts/validate-words.mjs`
+
+## Uuden sanalistan lisääminen kuvasta
+
+Laura lähettää kuvan kirjan sanastosivusta. Tee näin:
+
+1. Litteroi kaikki sanat kuvasta tarkasti, myös å/ä/ö. Jos jokin kohta on
+   epäselvä tai rajautuu kuvan ulkopuolelle, kysy Lauralta.
+2. Korvaa `src/data/words.json` kokonaan uudella listalla ja uudella `id`:llä.
+3. Aja `node scripts/validate-words.mjs`.
+4. Näytä Lauralle lista tarkistettavaksi (suomi – ruotsin muodot).
+5. Commit ("Vaihda sanalista: <kuvaus>") ja push `main`-haaraan.
 
 ## PIN-koodi
 

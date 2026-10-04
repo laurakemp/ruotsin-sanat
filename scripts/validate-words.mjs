@@ -7,32 +7,32 @@ import { readFileSync } from "node:fs";
 const FILE = new URL("../src/data/words.json", import.meta.url);
 const errors = [];
 
-let data;
+let list;
 try {
-  data = JSON.parse(readFileSync(FILE, "utf8"));
+  list = JSON.parse(readFileSync(FILE, "utf8"));
 } catch (error) {
   console.error(`words.json ei ole kelvollista JSONia: ${error.message}`);
   process.exit(1);
 }
 
-if (!Array.isArray(data.lists) || data.lists.length === 0) {
-  errors.push('Tiedostossa pitää olla "lists"-taulukko, jossa on vähintään yksi lista.');
-}
+if (!list.id || typeof list.id !== "string") errors.push('Puuttuu "id".');
+if (!list.title) errors.push('Puuttuu "title".');
 
-const ids = new Set();
-for (const [i, list] of (data.lists ?? []).entries()) {
-  const where = `lista #${i + 1} (${list.name ?? "nimetön"})`;
-  if (!list.id || typeof list.id !== "string") errors.push(`${where}: puuttuu "id".`);
-  if (ids.has(list.id)) errors.push(`${where}: sama "id" on jo käytössä: ${list.id}`);
-  ids.add(list.id);
-  if (!list.name) errors.push(`${where}: puuttuu "name".`);
-  if (!Array.isArray(list.words) || list.words.length < 2) {
-    errors.push(`${where}: listassa pitää olla vähintään 2 sanaa.`);
-    continue;
-  }
-  for (const [j, word] of list.words.entries()) {
-    if (!word.fi?.trim() || !word.sv?.trim()) {
-      errors.push(`${where}, sana #${j + 1}: sekä "fi" että "sv" tarvitaan.`);
+const forms = list.forms ?? ["ruotsiksi"];
+if (!Array.isArray(forms) || forms.length === 0) errors.push('"forms" pitää olla taulukko.');
+
+if (!Array.isArray(list.words) || list.words.length < 2) {
+  errors.push("Listassa pitää olla vähintään 2 sanaa.");
+} else {
+  const seen = new Set();
+  for (const [i, word] of list.words.entries()) {
+    const where = `sana #${i + 1} (${word.fi ?? "?"})`;
+    const sv = Array.isArray(word.sv) ? word.sv : [word.sv];
+    if (!word.fi?.trim()) errors.push(`${where}: puuttuu "fi".`);
+    if (seen.has(word.fi)) errors.push(`${where}: sama suomenkielinen sana on jo listassa.`);
+    seen.add(word.fi);
+    if (sv.length !== forms.length || sv.some((form) => !form?.trim())) {
+      errors.push(`${where}: "sv" tarvitsee ${forms.length} muotoa (${forms.join(", ")}).`);
     }
   }
 }
@@ -41,4 +41,4 @@ if (errors.length) {
   console.error(errors.join("\n"));
   process.exit(1);
 }
-console.log(`words.json kunnossa: ${data.lists.length} listaa.`);
+console.log(`words.json kunnossa: "${list.title}", ${list.words.length} sanaa.`);

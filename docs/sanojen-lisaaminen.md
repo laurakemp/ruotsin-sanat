@@ -1,34 +1,30 @@
-# Sanojen lisääminen
+# Uusien sanojen vaihtaminen
 
-Sanat ovat tiedostossa [`src/data/words.json`](../src/data/words.json).
+Sovelluksessa on aina **yksi ajankohtainen sanalista**, eli se, jonka opettaja on
+viimeksi antanut. Kun uudet sanat tulevat, vanha lista korvataan.
 
-## Helpoin tapa: pyydä Claudea
+## Näin vaihdat sanat
 
-Kirjoita Claudelle esimerkiksi:
+1. Ota kuva kirjan sanastosivusta.
+2. Lähetä kuva Claudelle ja kirjoita esimerkiksi:
+   > Tässä uudet sanat, vaihda sanalista.
+3. Claude litteroi sanat ja näyttää ne sinulle tarkistettavaksi.
+4. Kun hyväksyt listan, Claude julkaisee sen. Noin minuutin kuluttua uudet sanat
+   näkyvät pojan puhelimessa, kun sovellus avataan uudelleen.
 
-> Lisää uusi sanalista "Kappale 4" näillä sanoilla:
-> koira - en hund
-> kissa - en katt
+Pojan keräämät pisteet säilyvät. Sanojen tähdet alkavat uudella listalla alusta.
 
-Voit myös lähettää kuvan kirjan sanastosivusta. Claude lisää sanat, tarkistaa
-tiedoston ja julkaisee muutoksen.
-
-## Käsin GitHubin verkkosivulla
+## Jos haluat korjata yksittäisen sanan itse
 
 1. Avaa https://github.com/laurakemp/ruotsin-sanat/blob/main/src/data/words.json
 2. Paina kynän kuvaa (Edit this file).
-3. Lisää sanat samaan muotoon kuin muut:
-   ```json
-   { "fi": "koira", "sv": "en hund" },
-   ```
-   Huomaa pilkku rivin lopussa. Listan viimeisen sanan perään ei tule pilkkua.
-4. Paina **Commit changes** ja kirjoita lyhyt kuvaus, esim. "Lisää kappaleen 4 sanat".
-5. Noin minuutin kuluttua uudet sanat näkyvät sovelluksessa.
+3. Korjaa sana. Säilytä lainausmerkit ja pilkut ennallaan.
+4. Paina **Commit changes**.
 
-Jos tiedostossa on virhe, julkaisu ei mene läpi. Vanha versio jää silloin
-näkyviin, ja välilehdellä **Actions** näkyy punainen rasti ja virheen kuvaus.
+Jos tiedostoon tulee virhe, julkaisu ei mene läpi ja vanha versio jää näkyviin.
+Välilehdellä **Actions** näkyy silloin punainen rasti ja virheen kuvaus.
 
 ## Muistettavaa
 
-- Kirjoita ruotsin substantiiveihin artikkeli: **en** hund, **ett** hus.
-- Älä lisää sanalistoihin henkilötietoja, koska repositorio on julkinen.
+- Jos kirjassa on kaksi oikeaa muotoa (esim. *gett/givit*), kumpikin hyväksytään.
+- Älä lisää sovellukseen henkilötietoja, koska repositorio on julkinen.

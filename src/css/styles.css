@@ -1,166 +1,378 @@
-/* Värit: ruotsin lipun sininen ja keltainen. */
+/* ==========================================================================
+   Värit ja mitat. Ruotsin lipun sininen ja keltainen.
+   ========================================================================== */
+
 :root {
-  --bg: #f4f7fb;
+  --bg: #f3f6fa;
   --surface: #ffffff;
-  --text: #1d2a3a;
-  --muted: #5b6b7d;
-  --border: #d6dee8;
-  --primary: #005b99;
-  --primary-text: #ffffff;
-  --accent: #fecc02;
-  --good: #1f8a4c;
-  --good-bg: #e3f5ea;
-  --bad: #c0392b;
-  --bad-bg: #fbe7e5;
-  --almost-bg: #fff6d6;
-  --radius: 14px;
+  --surface-2: #eef3f8;
+  --text: #13202e;
+  --muted: #5d6b7a;
+  --border: #dde4ec;
+
+  --primary: #006aa7;
+  --primary-press: #00558a;
+  --on-primary: #ffffff;
+  --accent: #fecc00;
+
+  --success: #1e8e4f;
+  --success-bg: #e2f6ea;
+  --danger: #c4372b;
+  --danger-bg: #fdeaea;
+
+  --radius: 18px;
+  --radius-sm: 12px;
+  --shadow: 0 1px 2px rgb(16 32 48 / 6%), 0 4px 16px rgb(16 32 48 / 6%);
+  --tap: 56px;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #0f1722;
-    --surface: #1a2533;
-    --text: #e8eef5;
-    --muted: #9aabbd;
-    --border: #2e3d50;
-    --primary: #3d9be0;
-    --primary-text: #0f1722;
-    --good: #5fd08f;
-    --good-bg: #173826;
-    --bad: #ff8a7d;
-    --bad-bg: #3d1d1a;
-    --almost-bg: #3a3214;
+    --bg: #0d1520;
+    --surface: #17222f;
+    --surface-2: #1f2c3b;
+    --text: #e9eef4;
+    --muted: #9aa9b8;
+    --border: #2b3a4b;
+    --primary: #3b9be0;
+    --primary-press: #2f85c4;
+    --on-primary: #06121c;
+    --success: #5ccf8e;
+    --success-bg: #163627;
+    --danger: #ff8b80;
+    --danger-bg: #3a1c1a;
+    --shadow: none;
   }
 }
 
+/* ==========================================================================
+   Perusta
+   ========================================================================== */
+
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
-  font-size: 18px;
-  line-height: 1.5;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 17px;
+  line-height: 1.45;
   background: var(--bg);
   color: var(--text);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .app {
-  max-width: 480px;
+  max-width: 520px;
   margin: 0 auto;
-  padding: 16px;
+  padding: max(16px, env(safe-area-inset-top)) 16px max(24px, env(safe-area-inset-bottom));
 }
 
-.app-header h1 {
-  margin: 8px 0 16px;
-  font-size: 1.5rem;
-  text-align: center;
-}
+h1, h2, p { margin: 0; }
+.muted { color: var(--muted); }
 
-h2 { margin: 0; font-size: 1rem; color: var(--muted); }
-
-[hidden] { display: none !important; }
-
-/* ---------- Asettelu ---------- */
+.screen { display: flex; flex-direction: column; gap: 16px; }
+.screen-center { min-height: 85vh; justify-content: center; text-align: center; align-items: center; }
+.screen-center > * { width: 100%; }
+.stack { display: flex; flex-direction: column; gap: 12px; }
+.row { display: flex; gap: 10px; }
+.row > * { flex: 1; }
+.full { width: 100%; }
 
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
-  padding: 20px 16px;
+  padding: 18px;
+  box-shadow: var(--shadow);
+  text-align: left;
 }
 
-.stack { display: flex; flex-direction: column; gap: 12px; }
-.row { display: flex; gap: 12px; }
-.row > * { flex: 1; }
+.eyebrow {
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
 
-/* ---------- Painikkeet ja kentät ---------- */
+.hero-emoji { font-size: 4.5rem; line-height: 1; }
+
+/* ==========================================================================
+   Painikkeet ja kentät
+   ========================================================================== */
 
 .btn {
-  min-height: 52px;
-  padding: 12px 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--tap);
+  padding: 12px 18px;
   border: 1px solid var(--border);
-  border-radius: var(--radius);
+  border-radius: var(--radius-sm);
   background: var(--surface);
   color: var(--text);
   font: inherit;
-  font-weight: 600;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.08s ease, background 0.15s ease;
+}
+
+.btn:active:not(:disabled) { transform: scale(0.97); }
+.btn:disabled { cursor: default; }
+.btn-primary { background: var(--primary); border-color: var(--primary); color: var(--on-primary); }
+.btn-primary:active { background: var(--primary-press); }
+.btn-success { background: var(--success); border-color: var(--success); color: #fff; }
+.btn-soft { background: var(--surface-2); border-color: transparent; }
+.btn-ghost { background: transparent; border-color: transparent; color: var(--primary); }
+
+.icon-btn {
+  width: 44px;
+  height: 44px;
+  border: none;
+  border-radius: 50%;
+  background: var(--surface-2);
+  color: var(--text);
+  font-size: 1.2rem;
   cursor: pointer;
 }
 
-.btn.primary { background: var(--primary); border-color: var(--primary); color: var(--primary-text); }
-.btn.good { background: var(--good-bg); border-color: var(--good); color: var(--good); }
-.btn.bad { background: var(--bad-bg); border-color: var(--bad); color: var(--bad); }
-.btn.link { min-height: auto; padding: 4px 0; border: none; background: none; color: var(--primary); }
-.btn:disabled { cursor: default; }
-
-input[type="text"],
-input[type="password"] {
+.input {
   width: 100%;
-  min-height: 52px;
+  min-height: var(--tap);
   padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius);
-  background: var(--bg);
+  border: 2px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
   color: var(--text);
   font: inherit;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
+  transition: border-color 0.15s ease;
 }
 
-/* Valintaruudut nappimaisina */
-.options { display: flex; flex-wrap: wrap; gap: 8px; }
+.input:focus { outline: none; border-color: var(--primary); }
+.input.is-correct { border-color: var(--success); background: var(--success-bg); }
+.input.is-wrong { border-color: var(--danger); background: var(--danger-bg); text-decoration: line-through; }
+.input-pin { text-align: center; font-size: 1.6rem; letter-spacing: 0.3em; }
 
-.option {
+:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+/* ==========================================================================
+   Etusivu
+   ========================================================================== */
+
+.topbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.brand { font-size: 1.35rem; }
+.topbar-title { font-size: 1.15rem; }
+.chips { display: flex; gap: 8px; }
+
+.chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  font-weight: 700;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+
+.goal-card { display: flex; flex-direction: column; gap: 10px; }
+.goal-card h2 { font-size: 1.3rem; }
+.goal-card .btn-ghost { align-self: flex-start; min-height: 40px; padding: 4px 0; }
+.goal-meta { font-size: 0.95rem; }
+
+.progress-track {
+  height: 12px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  overflow: hidden;
+  flex: none;
+}
+
+.progress-fill {
+  width: 0;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--accent), #ffb800);
+  transition: width 0.4s ease;
+}
+
+.section-title { font-size: 1.05rem; margin-top: 4px; }
+
+.mode-list { display: flex; flex-direction: column; gap: 10px; }
+
+.mode-card {
   display: flex;
   align-items: center;
-  gap: 8px;
-  padding: 10px 14px;
+  gap: 14px;
+  width: 100%;
+  padding: 14px;
   border: 1px solid var(--border);
-  border-radius: 999px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
   cursor: pointer;
+  transition: transform 0.08s ease;
 }
 
-.option:has(input:checked) {
-  border-color: var(--primary);
-  outline: 2px solid var(--primary);
+.mode-card:active { transform: scale(0.98); }
+.mode-card-exam { border: 2px solid var(--accent); }
+
+.mode-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  font-size: 1.5rem;
 }
 
-.option input { accent-color: var(--primary); }
+.icon-learn { background: #e4f1fb; }
+.icon-choice { background: #efe8fd; }
+.icon-one { background: #e3f6ea; }
+.icon-all { background: #fff4c7; }
 
-/* ---------- Harjoitus ---------- */
+@media (prefers-color-scheme: dark) {
+  .icon-learn, .icon-choice, .icon-one, .icon-all { background: var(--surface-2); }
+}
 
-.quiz-top { display: flex; justify-content: space-between; align-items: center; }
-.progress { color: var(--muted); font-size: 0.9rem; }
+.mode-text { display: flex; flex-direction: column; flex: 1; }
+.mode-text span { color: var(--muted); font-size: 0.9rem; }
+
+.level { display: flex; gap: 3px; }
+.level i { width: 6px; height: 16px; border-radius: 3px; background: var(--border); }
+.level i.on { background: var(--primary); }
+
+.hint { font-size: 0.9rem; color: var(--muted); text-align: center; padding: 0 8px; }
+
+/* ==========================================================================
+   Sanalista
+   ========================================================================== */
+
+.word-table { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+
+.word-row {
+  padding: 12px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.word-head { display: flex; justify-content: space-between; gap: 8px; }
+.word-forms { color: var(--muted); }
+
+.stars { color: #e6a800; letter-spacing: 0.08em; white-space: nowrap; }
+
+/* ==========================================================================
+   Harjoitus
+   ========================================================================== */
+
+.quiz-bar { display: flex; align-items: center; gap: 12px; }
+.quiz-bar .progress-track { flex: 1; }
+.streak { min-width: 44px; text-align: right; font-weight: 800; color: #e67700; }
+
+.question { text-align: center; padding: 18px 0 6px; display: flex; flex-direction: column; gap: 6px; }
 
 .prompt {
-  margin: 16px 0;
-  font-size: 2rem;
-  font-weight: 700;
-  text-align: center;
+  font-size: clamp(1.7rem, 8vw, 2.4rem);
+  font-weight: 800;
+  line-height: 1.15;
   overflow-wrap: anywhere;
 }
 
-.answer {
-  margin: 0;
-  padding: 16px;
-  border-radius: var(--radius);
-  background: var(--almost-bg);
-  font-size: 1.5rem;
-  font-weight: 700;
-  text-align: center;
+.forms-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.form-cell {
+  display: flex;
+  flex-direction: column;
+  padding: 12px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  animation: pop 0.25s ease both;
 }
+
+.form-name { font-size: 0.8rem; color: var(--muted); }
+.form-value { font-size: 1.3rem; }
 
 .choices { display: grid; gap: 10px; }
+.choice { font-size: 1.2rem; }
+.choice.is-correct { background: var(--success-bg); border-color: var(--success); color: var(--success); }
+.choice.is-wrong { background: var(--danger-bg); border-color: var(--danger); color: var(--danger); animation: shake 0.3s ease; }
 
-.feedback {
-  margin: 0;
-  padding: 12px 14px;
-  border-radius: var(--radius);
-  font-weight: 600;
-  text-align: center;
+.field { display: flex; flex-direction: column; gap: 4px; }
+.field-label { font-size: 0.85rem; font-weight: 700; color: var(--muted); }
+.field-answer { font-weight: 700; color: var(--success); }
+.field-answer:empty { display: none; }
+
+.letter-bar { display: flex; gap: 8px; justify-content: center; }
+
+.letter-btn {
+  width: 56px;
+  height: 48px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  font-size: 1.3rem;
+  font-weight: 700;
+  cursor: pointer;
 }
 
-.feedback.correct { background: var(--good-bg); color: var(--good); }
-.feedback.wrong { background: var(--bad-bg); color: var(--bad); }
-.feedback.almost { background: var(--almost-bg); }
+.feedback {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px;
+  border-radius: var(--radius);
+  animation: slide-up 0.25s ease both;
+}
 
-.missed-list { margin: 0; padding-left: 20px; }
+.feedback-title { font-size: 1.2rem; font-weight: 800; }
+.feedback .btn { margin-top: 8px; color: #fff; border: none; }
+.feedback-correct { background: var(--success-bg); color: var(--success); }
+.feedback-correct .btn { background: var(--success); }
+.feedback-wrong { background: var(--danger-bg); color: var(--danger); }
+.feedback-wrong .btn { background: var(--danger); }
+.feedback-text:empty { display: none; }
+
+/* ==========================================================================
+   Tulokset ja muut
+   ========================================================================== */
+
+.stat-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  padding: 14px 6px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+
+.stat-value { font-size: 1.4rem; font-weight: 800; }
+.stat-label { font-size: 0.8rem; color: var(--muted); }
+
+.plain-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
+
+.banner { padding: 10px 14px; border-radius: var(--radius-sm); font-weight: 600; }
+.banner-wrong { background: var(--danger-bg); color: var(--danger); }
+
+/* Konfetti */
+.confetti { position: fixed; inset: 0; pointer-events: none; overflow: hidden; z-index: 10; }
+.confetti span { position: absolute; top: -40px; animation: fall 2.5s ease-in forwards; }
+
+@keyframes fall { to { transform: translateY(110vh) rotate(540deg); } }
+@keyframes pop { from { opacity: 0; transform: scale(0.9); } }
+@keyframes slide-up { from { opacity: 0; transform: translateY(12px); } }
+@keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}

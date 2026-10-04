@@ -1,32 +1,27 @@
 {
-  "lists": [
-    {
-      "id": "esimerkki-elaimet",
-      "name": "Eläimet (esimerkki)",
-      "words": [
-        { "fi": "koira", "sv": "en hund" },
-        { "fi": "kissa", "sv": "en katt" },
-        { "fi": "hevonen", "sv": "en häst" },
-        { "fi": "lintu", "sv": "en fågel" },
-        { "fi": "kala", "sv": "en fisk" },
-        { "fi": "lehmä", "sv": "en ko" },
-        { "fi": "hiiri", "sv": "en mus" },
-        { "fi": "karhu", "sv": "en björn" }
-      ]
-    },
-    {
-      "id": "esimerkki-koti",
-      "name": "Koti (esimerkki)",
-      "words": [
-        { "fi": "talo", "sv": "ett hus" },
-        { "fi": "huone", "sv": "ett rum" },
-        { "fi": "keittiö", "sv": "ett kök" },
-        { "fi": "pöytä", "sv": "ett bord" },
-        { "fi": "tuoli", "sv": "en stol" },
-        { "fi": "sänky", "sv": "en säng" },
-        { "fi": "ikkuna", "sv": "ett fönster" },
-        { "fi": "ovi", "sv": "en dörr" }
-      ]
-    }
+  "id": "verbit-be-heta",
+  "title": "Epäsäännöllisiä verbejä",
+  "forms": ["perusmuoto", "preesens", "imperfekti", "supiini"],
+  "words": [
+    { "fi": "pyytää; rukoilla", "sv": ["be", "ber", "bad", "bett"] },
+    { "fi": "kutsua; tarjota", "sv": ["bjuda", "bjuder", "bjöd", "bjudit"] },
+    { "fi": "tulla joksikin", "sv": ["bli", "blir", "blev", "blivit"] },
+    { "fi": "murtaa, katkaista", "sv": ["bryta", "bryter", "bröt", "brutit"] },
+    { "fi": "juoda", "sv": ["dricka", "dricker", "drack", "druckit"] },
+    { "fi": "kuolla", "sv": ["dö", "dör", "dog", "dött"] },
+    { "fi": "pudota; kaatua", "sv": ["falla", "faller", "föll", "fallit"] },
+    { "fi": "matkustaa, mennä", "sv": ["fara", "far", "for", "farit"] },
+    { "fi": "olla olemassa", "sv": ["finnas", "finns", "fanns", "funnits"] },
+    { "fi": "lentää", "sv": ["flyga", "flyger", "flög", "flugit"] },
+    { "fi": "jatkaa; jatkua", "sv": ["fortsätta", "fortsätter", "fortsatte", "fortsatt"] },
+    { "fi": "palella", "sv": ["frysa", "fryser", "frös", "frusit"] },
+    { "fi": "saada", "sv": ["få", "får", "fick", "fått"] },
+    { "fi": "ymmärtää", "sv": ["förstå", "förstår", "förstod", "förstått"] },
+    { "fi": "kadota; hävitä", "sv": ["försvinna", "försvinner", "försvann", "försvunnit"] },
+    { "fi": "antaa", "sv": ["ge", "ger", "gav", "gett/givit"] },
+    { "fi": "kävellä; mennä", "sv": ["gå", "går", "gick", "gått"] },
+    { "fi": "tehdä", "sv": ["göra", "gör", "gjorde", "gjort"] },
+    { "fi": "olla, omistaa", "sv": ["ha", "har", "hade", "haft"] },
+    { "fi": "olla nimeltään", "sv": ["heta", "heter", "hette", "hetat"] }
   ]
 }
