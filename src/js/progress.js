@@ -44,24 +44,21 @@ export function changeStars(listId, word, delta) {
   return value;
 }
 
-// Virheiden määrä kertoo, mitkä sanat ovat vaikeimpia.
-export function getMisses(listId, word) {
-  return getValue("misses", listId, word);
-}
-
-export function addMiss(listId, word) {
-  setValue("misses", listId, word, getMisses(listId, word) + 1);
-}
-
-// Täydet pisteet harjoituskokeessa merkitsevät kaikki listan sanat opituiksi.
-export function markAllLearned(list) {
-  const stars = load("stars", {});
-  for (const word of list.words) stars[wordKey(list.id, word)] = MAX_STARS;
-  save("stars", stars);
-}
-
 export function learnedCount(list) {
   return list.words.filter((word) => getStars(list.id, word) === MAX_STARS).length;
+}
+
+// ---------- Osiot ----------
+// Muistaa, mikä osio harjoitellaan seuraavaksi, jotta kaikki sanat käydään läpi.
+
+export function getNextSection(listId) {
+  return load("nextSection", {})[listId] ?? 0;
+}
+
+export function setNextSection(listId, index) {
+  const next = load("nextSection", {});
+  next[listId] = index;
+  save("nextSection", next);
 }
 
 // ---------- Päiväputki ----------

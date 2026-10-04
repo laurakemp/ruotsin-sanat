@@ -24,12 +24,17 @@ julkaistaan GitHub Pagesiin: https://laurakemp.github.io/ruotsin-sanat/
   uudet sanat, vanha lista korvataan kokonaan. Vanhoja listoja ei säilytetä.
 - Etusivulla on sanalista-linkki, yksi **Aloita harjoittelu** -painike ja
   linkki kokeeseen.
-- **Harjoittelu:** `ROUND_SIZE` sanaa (oletus 5), vaikeimmat ensin (vähiten
-  tähtiä, eniten virheitä). Jokainen sana käy kierroksella läpi kaikki vaiheet
-  (`STEPS` tiedostossa `quiz.js`) tässä järjestyksessä: ensin kaikki sanat
-  monivalintana, sitten järjestystehtävänä, sitten yksi muoto kirjoittaen ja
-  viimeisenä kaikki muodot kirjoittaen. Lopuksi väärin menneet kerrataan
-  kirjoittamalla kaikki muodot, kunnes ne menevät oikein.
+- **Harjoittelu osioina:** sanalista jaetaan kirjan järjestyksessä
+  `ROUND_SIZE` sanan osioihin (oletus 5, eli 20 sanaa = 4 osiota). Aloita
+  harjoittelu -painike vie aina seuraavaan osioon (`nextSection` tallessa
+  puhelimessa), ja viimeisen jälkeen aloitetaan alusta. Näin kaikki sanat
+  käydään varmasti läpi. Osio vaihtuu vasta, kun kierros on tehty loppuun.
+- Kierroksella jokainen osion sana käy läpi kaikki vaiheet (`STEPS` tiedostossa
+  `quiz.js`): ensin kaikki monivalintana, sitten järjestystehtävänä, sitten
+  yksi muoto kirjoittaen ja viimeisenä kaikki muodot kirjoittaen. Lopuksi
+  väärin menneet kerrataan kirjoittamalla kaikki muodot, kunnes ne menevät
+  oikein. Harjoituskokeen jälkeinen kertaus harjoittelee väärin menneet sanat
+  eikä vaihda osiota.
 - **Pidä oppiminen yksinkertaisena.** Tavoite on, että verbin rivi jää mieleen
   kirjan järjestyksessä. Muodot numeroidaan (1.–4.), ja kun kysytään yhtä
   muotoa, näytetään aina lyhyt selitys (`formHints`) ja kirjan rivi, jossa

@@ -1,7 +1,8 @@
 // Sovelluksen asetukset. Tätä tiedostoa muokataan käsin.
 
-// Montako sanaa yhdellä kierroksella harjoitellaan. Jokainen sana käy läpi
-// kaikki neljä tehtävätyyppiä, joten kierroksella on ROUND_SIZE × 4 tehtävää.
+// Sanalista jaetaan kirjan järjestyksessä tämän kokoisiin osioihin. Yksi
+// harjoituskierros on yksi osio, ja jokainen sana käy läpi kaikki neljä
+// tehtävätyyppiä, joten kierroksella on ROUND_SIZE × 4 tehtävää.
 export const ROUND_SIZE = 5;
 
 // Montako vaihtoehtoa monivalinnassa näytetään.

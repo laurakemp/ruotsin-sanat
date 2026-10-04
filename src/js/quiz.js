@@ -37,12 +37,11 @@ export function shuffle(items) {
   return result;
 }
 
-// Valitsee heikoimmin osatut sanat: ensin vähiten tähtiä, sitten eniten
-// virheitä. Samantasoisista arvotaan.
-export function pickHardest(words, starsOf, missesOf, count) {
-  return shuffle(words)
-    .sort((a, b) => starsOf(a) - starsOf(b) || missesOf(b) - missesOf(a))
-    .slice(0, count);
+// Jakaa sanat kirjan järjestyksessä osioihin, esim. 20 sanaa → 4 × 5.
+export function splitSections(words, size) {
+  const sections = [];
+  for (let i = 0; i < words.length; i += size) sections.push(words.slice(i, i + size));
+  return sections;
 }
 
 export function buildQuestion(word, mode, formCount, allWords) {

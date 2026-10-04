@@ -209,6 +209,11 @@ h1, h2, p { margin: 0; }
 
 .btn-hero small { font-size: 0.85rem; font-weight: 500; opacity: 0.85; }
 
+.section-dots { display: flex; gap: 6px; margin-top: 4px; }
+.dot { width: 10px; height: 10px; border-radius: 50%; background: rgb(255 255 255 / 35%); }
+.dot-done { background: var(--accent); }
+.dot-next { background: #fff; }
+
 /* Koe-kortti */
 .exam-card {
   display: flex;

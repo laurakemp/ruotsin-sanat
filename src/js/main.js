@@ -15,10 +15,10 @@ import {
   checkAnswer,
   formatAnswer,
   pick,
-  pickHardest,
   STEPS,
   STEP_NAMES,
   shuffle,
+  splitSections,
 } from "./quiz.js?v=__VERSION__";
 
 const $ = (id) => document.getElementById(id);
@@ -31,6 +31,7 @@ const COMFORT = [
 ];
 
 let list = null;
+let sections = [];
 let session = null;
 
 // ---------- Apurit ----------
@@ -74,7 +75,10 @@ function formHint(i) {
 
 // Osoite …/#koe avaa suoraan kokeen, muuten etusivu.
 async function route() {
-  list ??= await loadList();
+  if (!list) {
+    list = await loadList();
+    sections = splitSections(list.words, ROUND_SIZE);
+  }
   if (location.hash === "#koe") startExam();
   else openHome();
 }
@@ -107,12 +111,32 @@ function openHome() {
   $("learned-count").textContent = `${learned} / ${total}`;
   $("learned-bar").style.width = `${(learned / total) * 100}%`;
   $("goal-message").textContent = goalMessage(learned, total);
-  $("start-sub").textContent = `${Math.min(ROUND_SIZE, total)} sanaa`;
+  $("start-sub").textContent = sectionText(nextSectionIndex());
+  renderSectionDots();
   $("exam-sub").textContent = `Kirjoita kaikkien ${total} sanan kaikki muodot`;
   $("exam-reward").textContent = progress.isExamReady(list.id)
     ? "✓ Olet valmis koulun kokeeseen!"
     : `💶 Koulun kokeen täysistä pisteistä ${SCHOOL_REWARD}`;
   showScreen("home");
+}
+
+// ---------- Osiot ----------
+
+function nextSectionIndex() {
+  return progress.getNextSection(list.id) % sections.length;
+}
+
+function sectionText(index) {
+  const words = sections[index];
+  return `Osio ${index + 1}/${sections.length}: ${words[0].sv[0]} – ${words.at(-1).sv[0]}`;
+}
+
+// Pallot näyttävät, missä osiossa ollaan: tehdyt, seuraava ja tulevat.
+function renderSectionDots() {
+  const next = nextSectionIndex();
+  $("section-dots").replaceChildren(
+    ...sections.map((_, i) => el("span", `dot ${i < next ? "dot-done" : i === next ? "dot-next" : ""}`)),
+  );
 }
 
 function goalMessage(learned, total) {
@@ -179,14 +203,18 @@ function current() {
   return session.queue[session.index];
 }
 
+// Ilman sanoja harjoitellaan seuraava osio. Kokeen jälkeen harjoitellaan
+// väärin menneet sanat, eikä osio silloin vaihdu.
 function startPractice(words = null) {
-  const chosen = words ?? pickHardest(list.words, starsOf, (w) => progress.getMisses(list.id, w), ROUND_SIZE);
+  const sectionIndex = words ? null : nextSectionIndex();
+  const chosen = words ?? sections[sectionIndex];
   // Jokainen sana käy läpi kaikki vaiheet: ensin kaikki monivalintana, sitten
   // järjestys, yksi muoto ja viimeisenä kaikkien muotojen kirjoitus.
   const questions = STEPS.flatMap((mode) =>
     shuffle(chosen).map((word) => buildQuestion(word, mode, list.forms.length, list.words)),
   );
   newSession("practice", chosen, questions);
+  session.sectionIndex = sectionIndex;
 }
 
 function startExam() {
@@ -269,7 +297,6 @@ function registerAnswer(correct) {
     session.streak = 0;
     session.retried.add(key);
     session.missed.set(q.word.fi, q.word);
-    progress.addMiss(list.id, q.word);
     if (affectsStars) progress.changeStars(list.id, q.word, -1);
     // Kertauksessa sana palaa jonoon, kunnes se menee oikein.
     if (session.phase === "review") {
@@ -500,10 +527,16 @@ function showPracticeResult() {
 
   $("result-emoji").textContent = emoji;
   $("result-title").textContent = title;
-  $("result-text").textContent =
-    session.missed.size > 0
-      ? "Kertasit myös vaikeimmat sanat loppuun asti. Jokainen kierros vie lähemmäs koetta."
-      : "Kaikki oikein ensimmäisellä yrityksellä.";
+  $("result-text").textContent = [
+    session.sectionIndex !== null ? `Osio ${session.sectionIndex + 1}/${sections.length} tehty!` : "",
+    session.missed.size > 0 ? "Kertasit myös vaikeimmat sanat loppuun asti." : "Kaikki oikein ensimmäisellä yrityksellä.",
+  ].join(" ");
+
+  // Seuraavalla kerralla harjoitellaan seuraava osio. Viimeisen jälkeen alusta.
+  if (session.sectionIndex !== null) {
+    progress.setNextSection(list.id, (session.sectionIndex + 1) % sections.length);
+  }
+  $("again-round-btn").textContent = `Seuraava: ${sectionText(nextSectionIndex())}`;
   $("stat-correct").textContent = `${session.firstTryCorrect}/${size}`;
   $("stat-points").textContent = `+${session.points}`;
   $("stat-streak").textContent = `🔥 ${session.bestStreak}`;

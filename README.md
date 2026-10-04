@@ -9,9 +9,10 @@ puhelimella.
 
 Kokeen tapaan suomenkielinen sana annetaan ja vastataan ruotsiksi.
 
-- **Aloita harjoittelu:** 5 sanaa, vaikeimmat ensin. Jokainen sana harjoitellaan
-  vaiheittain: monivalinta → järjestys → yksi muoto kirjoittaen → kaikki muodot
-  kirjoittaen. Lopuksi väärin menneet kerrataan, kunnes ne menevät oikein.
+- **Aloita harjoittelu:** sanat harjoitellaan 5 sanan osioissa kirjan
+  järjestyksessä (20 sanaa = 4 osiota). Jokainen sana harjoitellaan vaiheittain:
+  monivalinta → järjestys → yksi muoto kirjoittaen → kaikki muodot kirjoittaen.
+  Lopuksi väärin menneet kerrataan, kunnes ne menevät oikein.
 - **Harjoituskoe** ([oma linkki](https://laurakemp.github.io/ruotsin-sanat/#koe)):
   kaikkien sanojen kaikki muodot kirjoittaen. Lopuksi näkyy, mitkä menivät
   oikein ja mitkä väärin, ja vaikeat sanat voi kerrata heti. Täydet pisteet
