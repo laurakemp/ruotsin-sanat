@@ -35,7 +35,8 @@ julkaistaan GitHub Pagesiin: https://laurakemp.github.io/ruotsin-sanat/
 - Kannustus: pisteet, putkibonus, päiväputki, sanakohtaiset tähdet (0–3) ja
   konfetti. Tähden saa, kun kaikki muodot menevät oikein ensimmäisellä
   yrityksellä (kaikki muodot -tehtävä tai koe). Väärä vastaus vie tähden.
-  Kolme tähteä = opittu.
+  Kolme tähteä = opittu. Täydet pisteet harjoituskokeessa merkitsevät kaikki
+  listan sanat opituiksi.
 - **Palkkio:** oppilas saa `SCHOOL_REWARD` (5 €) **koulun kokeen** täysistä
   pisteistä, ei sovelluksen kokeesta. Sovelluksen koe on harjoituskoe: täysillä
   pisteillä se kertoo, että oppilas on valmis koulun kokeeseen, ja muistuttaa

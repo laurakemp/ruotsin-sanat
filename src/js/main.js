@@ -536,6 +536,7 @@ function showReward(wrongCount) {
 
   if (wrongCount === 0) {
     progress.markExamReady(list.id);
+    progress.markAllLearned(list);
     $("reward-emoji").textContent = "💶";
     $("reward-title").textContent = "Olet valmis koulun kokeeseen!";
     $("reward-text").textContent = `Kun saat koulun kokeesta täydet pisteet, saat ${SCHOOL_REWARD} palkkion. Tsemppiä!`;

@@ -53,6 +53,13 @@ export function addMiss(listId, word) {
   setValue("misses", listId, word, getMisses(listId, word) + 1);
 }
 
+// Täydet pisteet harjoituskokeessa merkitsevät kaikki listan sanat opituiksi.
+export function markAllLearned(list) {
+  const stars = load("stars", {});
+  for (const word of list.words) stars[wordKey(list.id, word)] = MAX_STARS;
+  save("stars", stars);
+}
+
 export function learnedCount(list) {
   return list.words.filter((word) => getStars(list.id, word) === MAX_STARS).length;
 }
