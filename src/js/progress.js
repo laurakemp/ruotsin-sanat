@@ -1,4 +1,5 @@
-// Edistyminen: pisteet, sanojen tähdet ja päiväputki. Tallentuu puhelimeen.
+// Edistyminen: pisteet, sanojen tähdet, virheet ja päiväputki. Tallentuu
+// puhelimeen.
 
 import { load, save } from "./storage.js";
 
@@ -14,25 +15,42 @@ export function addPoints(amount) {
   save("points", getPoints() + amount);
 }
 
-// ---------- Tähdet ----------
-// Sana saa tähden, kun kaikki muodot menevät kokeessa oikein ensimmäisellä
-// yrityksellä. Väärä vastaus vie yhden tähden. Kolme tähteä = opittu.
+// ---------- Sanakohtaiset tiedot ----------
+// Avaimena on listan id + suomenkielinen sana, joten uusi lista alkaa alusta.
 
-function starKey(listId, word) {
+function wordKey(listId, word) {
   return `${listId}:${word.fi}`;
 }
 
+function getValue(store, listId, word) {
+  return load(store, {})[wordKey(listId, word)] ?? 0;
+}
+
+function setValue(store, listId, word, value) {
+  const values = load(store, {});
+  values[wordKey(listId, word)] = value;
+  save(store, values);
+}
+
+// Sana saa tähden, kun kaikki muodot menevät oikein ensimmäisellä
+// yrityksellä. Väärä vastaus vie yhden tähden. Kolme tähteä = opittu.
 export function getStars(listId, word) {
-  return load("stars", {})[starKey(listId, word)] ?? 0;
+  return getValue("stars", listId, word);
 }
 
 export function changeStars(listId, word, delta) {
-  const stars = load("stars", {});
-  const key = starKey(listId, word);
-  const value = Math.min(MAX_STARS, Math.max(0, (stars[key] ?? 0) + delta));
-  stars[key] = value;
-  save("stars", stars);
+  const value = Math.min(MAX_STARS, Math.max(0, getStars(listId, word) + delta));
+  setValue("stars", listId, word, value);
   return value;
+}
+
+// Virheiden määrä kertoo, mitkä sanat ovat vaikeimpia.
+export function getMisses(listId, word) {
+  return getValue("misses", listId, word);
+}
+
+export function addMiss(listId, word) {
+  setValue("misses", listId, word, getMisses(listId, word) + 1);
 }
 
 export function learnedCount(list) {
@@ -55,7 +73,7 @@ export function getDayStreak() {
   return streak.days;
 }
 
-// Kutsutaan, kun päivän ensimmäinen kierros on tehty.
+// Kutsutaan, kun kierros on tehty. Laskee putken vain kerran päivässä.
 export function markPracticedToday() {
   const streak = load("dayStreak", { last: null, days: 0 });
   if (streak.last === today()) return streak.days;

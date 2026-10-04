@@ -1,28 +1,46 @@
-// Käyttöliittymä: näkymien vaihto ja harjoituksen kulku.
+// Käyttöliittymä: näkymät, harjoittelu ja koe.
+//
+// Harjoittelu: ROUND_SIZE vaikeinta sanaa satunnaisilla tehtävätyypeillä, ja
+// lopuksi väärin menneiden kertaus, kunnes ne menevät oikein.
+// Koe (#koe): kaikkien sanojen kaikki muodot ilman palautetta. Lopuksi tulokset
+// ja linkki vaikeiden sanojen kertaukseen.
 
 import { ROUND_SIZE, STREAK_BONUS_EVERY, STREAK_BONUS_POINTS } from "./config.js";
 import { celebrate } from "./confetti.js";
 import { loadList } from "./data.js";
 import { isPinRequired, tryUnlock } from "./pin.js";
 import * as progress from "./progress.js";
-import { MODES, buildQuestion, buildRound, checkAnswer, formatAnswer, pickWeakest } from "./quiz.js";
+import {
+  MODES,
+  buildQuestion,
+  checkAnswer,
+  formatAnswer,
+  pick,
+  pickHardest,
+  randomMode,
+  randomReviewMode,
+  shuffle,
+} from "./quiz.js";
 
 const $ = (id) => document.getElementById(id);
 
 const PRAISE = ["Oikein!", "Hienoa!", "Mahtavaa!", "Loistavaa!", "Upeaa!", "Juuri noin!", "Bra jobbat!"];
 const COMFORT = [
-  "Ei haittaa, tämä tulee vielä uudelleen.",
-  "Melkein! Katso tarkkaan ja yritä myöhemmin uudelleen.",
-  "Virheistä oppii. Tämä tulee pian uudelleen.",
+  "Ei haittaa, kerrataan tämä lopuksi.",
+  "Virheistä oppii. Tämä tulee vielä uudelleen.",
+  "Melkein! Katso tarkkaan, niin muistat ensi kerralla.",
 ];
 
 let list = null;
-let round = null;
+let session = null;
 
 // ---------- Apurit ----------
 
-function pick(items) {
-  return items[Math.floor(Math.random() * items.length)];
+function el(tag, className, text) {
+  const node = document.createElement(tag);
+  if (className) node.className = className;
+  if (text !== undefined) node.textContent = text;
+  return node;
 }
 
 function showScreen(name) {
@@ -36,14 +54,15 @@ function starsText(count) {
   return "★".repeat(count) + "☆".repeat(progress.MAX_STARS - count);
 }
 
-function el(tag, className, text) {
-  const node = document.createElement(tag);
-  if (className) node.className = className;
-  if (text !== undefined) node.textContent = text;
-  return node;
+function starsOf(word) {
+  return progress.getStars(list.id, word);
 }
 
-// ---------- Käynnistys ja PIN ----------
+function formsText(word) {
+  return word.sv.map(formatAnswer).join(", ");
+}
+
+// ---------- Käynnistys, PIN ja reititys ----------
 
 async function init() {
   if (isPinRequired()) {
@@ -51,28 +70,47 @@ async function init() {
     $("pin-input").focus();
     return;
   }
-  await openHome();
+  await route();
 }
 
 $("pin-form").addEventListener("submit", async (event) => {
   event.preventDefault();
   if (await tryUnlock($("pin-input").value)) {
-    await openHome();
+    await route();
   } else {
     $("pin-error").hidden = false;
     $("pin-input").select();
   }
 });
 
-// ---------- Etusivu ----------
-
-async function openHome() {
+// Osoite …/#koe avaa suoraan kokeen, muuten etusivu.
+async function route() {
   list ??= await loadList();
-  renderHome();
-  showScreen("home");
+  if (location.hash === "#koe") startExam();
+  else openHome();
 }
 
-function renderHome() {
+window.addEventListener("hashchange", () => {
+  if (!isPinRequired()) route();
+});
+
+// Poistaa #koe-osoitteen, jotta selaimen päivitys ei avaa koetta uudelleen.
+function clearHash() {
+  if (location.hash) history.pushState(null, "", location.pathname + location.search);
+}
+
+function goHome() {
+  clearHash();
+  openHome();
+}
+
+for (const button of document.querySelectorAll(".home-link")) {
+  button.addEventListener("click", goHome);
+}
+
+// ---------- Etusivu ----------
+
+function openHome() {
   const learned = progress.learnedCount(list);
   const total = list.words.length;
 
@@ -82,6 +120,9 @@ function renderHome() {
   $("learned-count").textContent = `${learned} / ${total}`;
   $("learned-bar").style.width = `${(learned / total) * 100}%`;
   $("goal-message").textContent = goalMessage(learned, total);
+  $("start-sub").textContent = `${Math.min(ROUND_SIZE, total)} sanaa, vaikeimmat ensin`;
+  $("exam-sub").textContent = `Kirjoita kaikkien ${total} sanan kaikki muodot`;
+  showScreen("home");
 }
 
 function goalMessage(learned, total) {
@@ -91,44 +132,35 @@ function goalMessage(learned, total) {
   return "– hyvä alku!";
 }
 
-for (const card of document.querySelectorAll(".mode-card")) {
-  card.addEventListener("click", () => startRound(card.dataset.mode));
-}
-
-// ---------- Sanalista ----------
+$("start-btn").addEventListener("click", () => startPractice());
 
 $("wordlist-btn").addEventListener("click", () => {
   $("word-table").replaceChildren(
     ...list.words.map((word) => {
       const row = el("li", "word-row");
       const head = el("div", "word-head");
-      head.append(el("strong", "", word.fi), el("span", "stars", starsText(progress.getStars(list.id, word))));
-      row.append(head, el("span", "word-forms", word.sv.map(formatAnswer).join(", ")));
+      head.append(el("strong", "", word.fi), el("span", "stars", starsText(starsOf(word))));
+      row.append(head, el("span", "word-forms", formsText(word)));
       return row;
     }),
   );
   showScreen("words");
 });
 
-for (const button of document.querySelectorAll(".back-btn")) {
-  button.addEventListener("click", openHome);
-}
+// ---------- Istunto (yhteinen harjoittelulle ja kokeelle) ----------
 
-// ---------- Kierros ----------
-
-function startRound(mode, words = null) {
-  const starsOf = (word) => progress.getStars(list.id, word);
-  const chosen = words ?? pickWeakest(list.words, starsOf, ROUND_SIZE);
-
-  round = {
-    mode,
-    queue: buildRound(chosen, mode, list.forms.length),
+function newSession(kind, words, questions) {
+  session = {
+    kind, // "practice" tai "exam"
+    phase: "main", // harjoittelussa lopuksi "review"
+    words,
+    queue: questions,
     index: 0,
-    size: chosen.length,
     firstTryCorrect: 0,
     retried: new Set(),
     missed: new Map(),
     starsEarned: new Map(),
+    examResults: [],
     points: 0,
     streak: 0,
     bestStreak: 0,
@@ -138,80 +170,106 @@ function startRound(mode, words = null) {
 }
 
 function current() {
-  return round.queue[round.index];
+  return session.queue[session.index];
+}
+
+function startPractice(words = null) {
+  const chosen = words ?? pickHardest(list.words, starsOf, (w) => progress.getMisses(list.id, w), ROUND_SIZE);
+  const questions = chosen.map((word) => buildQuestion(word, randomMode(starsOf(word)), list.forms.length, list.words));
+  newSession("practice", chosen, questions);
+}
+
+function startExam() {
+  const questions = shuffle(list.words).map((word) => buildQuestion(word, "all", list.forms.length, list.words));
+  newSession("exam", list.words, questions);
+}
+
+function phaseText() {
+  const { kind, phase, index, queue } = session;
+  if (kind === "exam") return `Koe · ${index + 1} / ${queue.length}`;
+  if (phase === "review") return `Kertaus · jäljellä ${queue.length - index}`;
+  return `Harjoittelu · ${index + 1} / ${queue.length}`;
 }
 
 function showQuestion() {
   const q = current();
-  const { mode } = round;
+  const isExam = session.kind === "exam";
 
-  $("quiz-bar").style.width = `${(round.index / round.queue.length) * 100}%`;
-  $("streak").textContent = round.streak >= 2 ? `🔥 ${round.streak}` : "";
+  $("quiz-phase").textContent = phaseText();
+  $("quiz-bar").style.width = `${(session.index / session.queue.length) * 100}%`;
+  updateStreak();
   $("prompt").textContent = q.word.fi;
-  $("prompt-stars").textContent = starsText(progress.getStars(list.id, q.word));
+  $("prompt-stars").textContent = isExam ? "" : starsText(starsOf(q.word));
   $("question-label").textContent = questionLabel(q);
   $("feedback").hidden = true;
 
-  $("mode-learn").hidden = mode !== "learn";
-  $("mode-choice").hidden = mode !== "choice";
-  $("mode-write").hidden = mode !== "one" && mode !== "all";
+  $("mode-learn").hidden = q.mode !== "learn";
+  $("mode-choice").hidden = q.mode !== "choice";
+  $("mode-write").hidden = q.mode !== "one" && q.mode !== "all";
 
-  if (mode === "learn") showLearn();
-  if (mode === "choice") showChoices(q);
-  if (mode === "one" || mode === "all") showWriteFields(q);
+  if (q.mode === "learn") showLearn(q);
+  if (q.mode === "choice") showChoices(q);
+  if (q.mode === "one" || q.mode === "all") showWriteFields(q);
 }
 
 function questionLabel(q) {
-  if (q.formIndex !== null) return `Ruotsiksi: ${list.forms[q.formIndex]}`;
-  if (round.mode === "all") return "Kirjoita kaikki muodot ruotsiksi";
-  return "Muistatko muodot?";
+  if (q.mode === "learn") return "Muistatko muodot?";
+  if (q.mode === "choice") return `Valitse ${list.forms[q.formIndex]}`;
+  if (q.mode === "one") return `Kirjoita ${list.forms[q.formIndex]}`;
+  return "Kirjoita kaikki muodot ruotsiksi";
+}
+
+function updateStreak() {
+  $("streak").textContent = session.kind !== "exam" && session.streak >= 2 ? `🔥 ${session.streak}` : "";
 }
 
 // Kirjaa vastauksen ja palauttaa ansaitut pisteet palautetta varten.
 function registerAnswer(correct) {
   const q = current();
-  const firstTry = !round.retried.has(q.word.fi);
+  const firstTry = !session.retried.has(q.word.fi);
+  const affectsStars = q.mode === "all" && firstTry;
 
   if (!correct) {
-    round.streak = 0;
-    round.retried.add(q.word.fi);
-    round.missed.set(q.word.fi, q.word);
-    round.queue.push(buildQuestion(q.word, round.mode, list.forms.length, list.words));
-    if (round.mode === "all" && firstTry) progress.changeStars(list.id, q.word, -1);
+    session.streak = 0;
+    session.retried.add(q.word.fi);
+    session.missed.set(q.word.fi, q.word);
+    progress.addMiss(list.id, q.word);
+    if (affectsStars) progress.changeStars(list.id, q.word, -1);
+    // Kertauksessa sana palaa jonoon, kunnes se menee oikein.
+    if (session.phase === "review") {
+      session.queue.push(buildQuestion(q.word, randomReviewMode(), list.forms.length, list.words));
+    }
     return { points: 0, bonus: 0 };
   }
 
-  const base = MODES[round.mode].points;
+  const base = MODES[q.mode].points;
   const points = firstTry ? base : Math.ceil(base / 2);
-  round.streak++;
-  round.bestStreak = Math.max(round.bestStreak, round.streak);
-  const bonus = round.streak % STREAK_BONUS_EVERY === 0 ? STREAK_BONUS_POINTS : 0;
+  session.streak++;
+  session.bestStreak = Math.max(session.bestStreak, session.streak);
+  const bonus = session.kind !== "exam" && session.streak % STREAK_BONUS_EVERY === 0 ? STREAK_BONUS_POINTS : 0;
 
-  if (firstTry) round.firstTryCorrect++;
-  if (round.mode === "all" && firstTry) {
-    const stars = progress.changeStars(list.id, q.word, +1);
-    round.starsEarned.set(q.word.fi, stars);
-  }
+  if (firstTry && session.phase === "main") session.firstTryCorrect++;
+  if (affectsStars) session.starsEarned.set(q.word.fi, progress.changeStars(list.id, q.word, +1));
 
-  round.points += points + bonus;
+  session.points += points + bonus;
   progress.addPoints(points + bonus);
   return { points, bonus };
 }
 
-function showFeedback(correct, { points, bonus }, answerText) {
+function showFeedback(correct, { points, bonus }, detail) {
   const box = $("feedback");
   box.className = `feedback ${correct ? "feedback-correct" : "feedback-wrong"}`;
 
   if (correct) {
     $("feedback-title").textContent = `${pick(PRAISE)} +${points} ⭐`;
     $("feedback-text").textContent =
-      bonus > 0 ? `🔥 ${round.streak} oikein putkeen! +${bonus} bonuspistettä` : answerText ?? "";
+      bonus > 0 ? `🔥 ${session.streak} oikein putkeen! +${bonus} bonuspistettä` : detail ?? "";
   } else {
     $("feedback-title").textContent = "Ei vielä";
-    $("feedback-text").textContent = `${answerText} ${pick(COMFORT)}`;
+    $("feedback-text").textContent = [detail, pick(COMFORT)].filter(Boolean).join(" ");
   }
 
-  $("streak").textContent = round.streak >= 2 ? `🔥 ${round.streak}` : "";
+  updateStreak();
   box.hidden = false;
   $("next-btn").focus();
   box.scrollIntoView({ behavior: "smooth", block: "nearest" });
@@ -220,20 +278,17 @@ function showFeedback(correct, { points, bonus }, answerText) {
 $("next-btn").addEventListener("click", nextQuestion);
 
 function nextQuestion() {
-  round.index++;
-  if (round.index < round.queue.length) {
-    showQuestion();
-  } else {
-    showResult();
-  }
-}
+  session.index++;
+  if (session.index < session.queue.length) return showQuestion();
 
-$("quit-btn").addEventListener("click", openHome);
+  if (session.kind === "exam") return showExamResult();
+  if (session.phase === "main" && session.missed.size > 0) return showReviewIntro();
+  showPracticeResult();
+}
 
 // ---------- Opettele ----------
 
-function showLearn() {
-  const q = current();
+function showLearn(q) {
   $("learn-forms").replaceChildren(
     ...list.forms.map((formName, i) => {
       const cell = el("div", "form-cell");
@@ -244,7 +299,6 @@ function showLearn() {
   $("learn-forms").hidden = true;
   $("reveal-btn").hidden = false;
   $("self-grade").hidden = true;
-  $("reveal-btn").focus();
 }
 
 $("reveal-btn").addEventListener("click", () => {
@@ -292,12 +346,9 @@ function answerChoice(clicked, choice) {
 
 // ---------- Kirjoitus ----------
 
-function formIndexesFor(q) {
-  return q.formIndex !== null ? [q.formIndex] : list.forms.map((_, i) => i);
-}
-
 function showWriteFields(q) {
-  const fields = formIndexesFor(q).map((formIndex) => {
+  const formIndexes = q.formIndex !== null ? [q.formIndex] : list.forms.map((_, i) => i);
+  const fields = formIndexes.map((formIndex) => {
     const wrap = el("label", "field");
     wrap.append(el("span", "field-label", list.forms[formIndex]));
     const input = el("input", "input");
@@ -311,10 +362,16 @@ function showWriteFields(q) {
   $("write-fields").replaceChildren(...fields);
   $("check-btn").hidden = false;
   $("letter-bar").hidden = false;
+  $("check-btn").textContent = checkButtonText();
   fields[0].querySelector("input").focus();
 }
 
-// Enter siirtää seuraavaan kenttään, viimeisessä kentässä tarkistaa.
+function checkButtonText() {
+  if (session.kind !== "exam") return "Tarkista";
+  return session.index === session.queue.length - 1 ? "Valmis – katso tulokset" : "Seuraava →";
+}
+
+// Enter siirtää seuraavaan kenttään, viimeisessä kentässä lähettää.
 $("write-fields").addEventListener("keydown", (event) => {
   if (event.key !== "Enter") return;
   const inputs = [...$("write-fields").querySelectorAll("input")];
@@ -328,29 +385,34 @@ $("write-fields").addEventListener("keydown", (event) => {
 $("mode-write").addEventListener("submit", (event) => {
   event.preventDefault();
   const q = current();
-  let allCorrect = true;
-
-  for (const input of $("write-fields").querySelectorAll("input")) {
+  const answers = [...$("write-fields").querySelectorAll("input")].map((input) => {
     const expected = q.word.sv[input.dataset.formIndex];
     const result = checkAnswer(input.value, expected);
-    const ok = result !== "wrong";
-    allCorrect &&= ok;
+    return { input, given: input.value.trim(), expected, result, ok: result !== "wrong" };
+  });
+  const allCorrect = answers.every((a) => a.ok);
 
+  // Kokeessa ei näytetä palautetta, vaan siirrytään suoraan seuraavaan.
+  if (session.kind === "exam") {
+    session.examResults.push({ word: q.word, answers, ok: allCorrect });
+    registerAnswer(allCorrect);
+    return nextQuestion();
+  }
+
+  for (const { input, expected, result, ok } of answers) {
     input.disabled = true;
     input.classList.add(ok ? "is-correct" : "is-wrong");
-    const hint = input.parentElement.querySelector(".field-answer");
-    hint.textContent = ok ? (result === "missing-article" ? `Muista artikkeli: ${expected}` : "") : `✓ ${formatAnswer(expected)}`;
+    input.parentElement.querySelector(".field-answer").textContent = ok
+      ? result === "missing-article" ? `Muista artikkeli: ${expected}` : ""
+      : `✓ ${formatAnswer(expected)}`;
   }
 
   $("check-btn").hidden = true;
   $("letter-bar").hidden = true;
   const result = registerAnswer(allCorrect);
-  const starNote =
-    round.mode === "all" && round.starsEarned.has(q.word.fi)
-      ? `Sanalle tähti! ${starsText(round.starsEarned.get(q.word.fi))}`
-      : null;
+  const starNote = session.starsEarned.has(q.word.fi) ? `Sanalle tähti! ${starsText(starsOf(q.word))}` : null;
   showFeedback(allCorrect, result, allCorrect ? starNote : "Katso oikeat muodot yllä.");
-  if (allCorrect) $("prompt-stars").textContent = starsText(progress.getStars(list.id, q.word));
+  if (allCorrect) $("prompt-stars").textContent = starsText(starsOf(q.word));
 });
 
 // Å, Ä ja Ö -napit lisäävät kirjaimen viimeksi valittuun kenttään.
@@ -368,11 +430,30 @@ for (const button of document.querySelectorAll(".letter-btn")) {
   });
 }
 
-// ---------- Tulokset ----------
+// ---------- Kertaus harjoittelun lopuksi ----------
 
-function showResult() {
+function showReviewIntro() {
+  const words = [...session.missed.values()];
+  $("review-list").replaceChildren(...words.map((word) => el("li", "", word.fi)));
+  showScreen("review-intro");
+}
+
+$("review-start-btn").addEventListener("click", () => {
+  session.phase = "review";
+  session.queue = shuffle([...session.missed.values()]).map((word) =>
+    buildQuestion(word, randomReviewMode(), list.forms.length, list.words),
+  );
+  session.index = 0;
+  showScreen("quiz");
+  showQuestion();
+});
+
+// ---------- Harjoittelun tulokset ----------
+
+function showPracticeResult() {
   progress.markPracticedToday();
-  const ratio = round.firstTryCorrect / round.size;
+  const size = session.words.length;
+  const ratio = session.firstTryCorrect / size;
 
   const [emoji, title] =
     ratio === 1 ? ["🏆", "Täydellinen kierros!"]
@@ -383,14 +464,16 @@ function showResult() {
   $("result-emoji").textContent = emoji;
   $("result-title").textContent = title;
   $("result-text").textContent =
-    ratio === 1 ? "Kaikki oikein ensimmäisellä yrityksellä." : "Jokainen kierros vie lähemmäs koetta.";
-  $("stat-correct").textContent = `${round.firstTryCorrect}/${round.size}`;
-  $("stat-points").textContent = `+${round.points}`;
-  $("stat-streak").textContent = `🔥 ${round.bestStreak}`;
+    session.missed.size > 0
+      ? "Kertasit myös vaikeimmat sanat loppuun asti. Jokainen kierros vie lähemmäs koetta."
+      : "Kaikki oikein ensimmäisellä yrityksellä.";
+  $("stat-correct").textContent = `${session.firstTryCorrect}/${size}`;
+  $("stat-points").textContent = `+${session.points}`;
+  $("stat-streak").textContent = `🔥 ${session.bestStreak}`;
 
-  $("star-news").hidden = round.starsEarned.size === 0;
+  $("star-news").hidden = session.starsEarned.size === 0;
   $("star-list").replaceChildren(
-    ...[...round.starsEarned].map(([fi, stars]) => {
+    ...[...session.starsEarned].map(([fi, stars]) => {
       const item = el("li", "", `${fi} `);
       item.append(el("span", "stars", starsText(stars)));
       if (stars === progress.MAX_STARS) item.append(" opittu! 🎉");
@@ -398,20 +481,74 @@ function showResult() {
     }),
   );
 
-  const missedWords = [...round.missed.values()];
-  $("missed").hidden = missedWords.length === 0;
-  $("missed-list").replaceChildren(
-    ...missedWords.map((word) => el("li", "", `${word.fi}: ${word.sv.map(formatAnswer).join(", ")}`)),
-  );
-  $("retry-btn").hidden = missedWords.length === 0;
-  $("again-round-btn").className = `btn ${missedWords.length ? "btn-soft" : "btn-primary"}`;
-
   showScreen("result");
   if (ratio >= 0.8) celebrate();
 }
 
-$("retry-btn").addEventListener("click", () => startRound(round.mode, [...round.missed.values()]));
-$("again-round-btn").addEventListener("click", () => startRound(round.mode));
-$("home-btn").addEventListener("click", openHome);
+$("again-round-btn").addEventListener("click", () => startPractice());
+
+// ---------- Kokeen tulokset ----------
+
+function showExamResult() {
+  progress.markPracticedToday();
+  const results = session.examResults;
+  const wordsOk = results.filter((r) => r.ok).length;
+  const formsAll = results.flatMap((r) => r.answers);
+  const formsOk = formsAll.filter((a) => a.ok).length;
+  const ratio = wordsOk / results.length;
+
+  const [emoji, title] =
+    ratio === 1 ? ["🏆", "Täydet pisteet!"]
+    : ratio >= 0.8 ? ["🌟", "Erinomainen koe!"]
+    : ratio >= 0.5 ? ["💪", "Hyvä koe!"]
+    : ["🌱", "Hyvä alku!"];
+
+  $("exam-emoji").textContent = emoji;
+  $("exam-title").textContent = title;
+  $("exam-text").textContent =
+    ratio === 1 ? "Osaat kaikki muodot. Olet valmis kokeeseen!" : "Alta näet, mitkä menivät oikein ja mitkä väärin.";
+  $("exam-words").textContent = `${wordsOk}/${results.length}`;
+  $("exam-forms").textContent = `${formsOk}/${formsAll.length}`;
+
+  const wrongWords = results.filter((r) => !r.ok).map((r) => r.word);
+  $("exam-review-btn").hidden = wrongWords.length === 0;
+  $("exam-review-sub").textContent = `${wrongWords.length} sanaa, jotka menivät väärin`;
+
+  // Väärin menneet ensin, jotta ne huomaa heti.
+  const sorted = [...results].sort((a, b) => a.ok - b.ok);
+  $("exam-table").replaceChildren(...sorted.map(examRow));
+
+  showScreen("exam-result");
+  if (ratio >= 0.8) celebrate();
+}
+
+function examRow({ word, answers, ok }) {
+  const row = el("li", `word-row ${ok ? "row-ok" : "row-bad"}`);
+  const head = el("div", "word-head");
+  head.append(el("strong", "", word.fi), el("span", "row-mark", ok ? "✓" : "✗"));
+
+  const forms = el("div", "exam-forms");
+  for (const answer of answers) {
+    const cell = el("span", answer.ok ? "form-ok" : "form-bad");
+    if (answer.ok) {
+      cell.textContent = formatAnswer(answer.expected);
+    } else {
+      if (answer.given) cell.append(el("s", "", answer.given), " ");
+      cell.append(el("strong", "", formatAnswer(answer.expected)));
+    }
+    forms.append(cell);
+  }
+
+  row.append(head, forms);
+  return row;
+}
+
+$("exam-review-btn").addEventListener("click", () => {
+  const wrongWords = session.examResults.filter((r) => !r.ok).map((r) => r.word);
+  clearHash();
+  startPractice(wrongWords);
+});
+
+$("exam-again-btn").addEventListener("click", startExam);
 
 init();

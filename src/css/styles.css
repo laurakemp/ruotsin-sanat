@@ -199,27 +199,36 @@ h1, h2, p { margin: 0; }
 
 .section-title { font-size: 1.05rem; margin-top: 4px; }
 
-.mode-list { display: flex; flex-direction: column; gap: 10px; }
+/* Iso aloituspainike */
+.btn-hero {
+  flex-direction: column;
+  gap: 2px;
+  min-height: 76px;
+  font-size: 1.25rem;
+  border-radius: var(--radius);
+  box-shadow: 0 6px 18px rgb(0 106 167 / 28%);
+}
 
-.mode-card {
+.btn-hero small { font-size: 0.85rem; font-weight: 500; opacity: 0.85; }
+
+/* Koe-kortti */
+.exam-card {
   display: flex;
   align-items: center;
   gap: 14px;
-  width: 100%;
   padding: 14px;
-  border: 1px solid var(--border);
+  border: 2px solid var(--accent);
   border-radius: var(--radius);
   background: var(--surface);
   box-shadow: var(--shadow);
   color: var(--text);
-  font: inherit;
-  text-align: left;
-  cursor: pointer;
-  transition: transform 0.08s ease;
+  text-decoration: none;
+  font-weight: 700;
 }
 
-.mode-card:active { transform: scale(0.98); }
-.mode-card-exam { border: 2px solid var(--accent); }
+.exam-card:active { transform: scale(0.98); }
+.exam-text { display: flex; flex-direction: column; flex: 1; }
+.exam-text span { color: var(--muted); font-size: 0.9rem; font-weight: 400; }
 
 .mode-icon {
   display: grid;
@@ -229,23 +238,12 @@ h1, h2, p { margin: 0; }
   height: 48px;
   border-radius: 14px;
   font-size: 1.5rem;
+  background: #fff4c7;
 }
-
-.icon-learn { background: #e4f1fb; }
-.icon-choice { background: #efe8fd; }
-.icon-one { background: #e3f6ea; }
-.icon-all { background: #fff4c7; }
 
 @media (prefers-color-scheme: dark) {
-  .icon-learn, .icon-choice, .icon-one, .icon-all { background: var(--surface-2); }
+  .mode-icon { background: var(--surface-2); }
 }
-
-.mode-text { display: flex; flex-direction: column; flex: 1; }
-.mode-text span { color: var(--muted); font-size: 0.9rem; }
-
-.level { display: flex; gap: 3px; }
-.level i { width: 6px; height: 16px; border-radius: 3px; background: var(--border); }
-.level i.on { background: var(--primary); }
 
 .hint { font-size: 0.9rem; color: var(--muted); text-align: center; padding: 0 8px; }
 
@@ -272,7 +270,9 @@ h1, h2, p { margin: 0; }
    ========================================================================== */
 
 .quiz-bar { display: flex; align-items: center; gap: 12px; }
-.quiz-bar .progress-track { flex: 1; }
+.quiz-progress { flex: 1; display: flex; flex-direction: column; gap: 4px; }
+.quiz-phase { font-size: 0.8rem; font-weight: 700; color: var(--muted); }
+.icon-spacer { width: 44px; }
 .streak { min-width: 44px; text-align: right; font-weight: 800; color: #e67700; }
 
 .question { text-align: center; padding: 18px 0 6px; display: flex; flex-direction: column; gap: 6px; }
@@ -358,6 +358,21 @@ h1, h2, p { margin: 0; }
 
 .stat-value { font-size: 1.4rem; font-weight: 800; }
 .stat-label { font-size: 0.8rem; color: var(--muted); }
+
+.stat-grid-2 { grid-template-columns: repeat(2, 1fr); text-align: center; }
+.screen-center-block { display: flex; flex-direction: column; gap: 8px; align-items: center; text-align: center; padding-top: 16px; }
+
+/* Kokeen tulosrivit */
+.row-ok { border-left: 5px solid var(--success); }
+.row-bad { border-left: 5px solid var(--danger); }
+.row-mark { font-weight: 800; }
+.row-ok .row-mark { color: var(--success); }
+.row-bad .row-mark { color: var(--danger); }
+.exam-forms { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.exam-forms span { padding: 3px 8px; border-radius: 8px; font-size: 0.95rem; }
+.form-ok { background: var(--success-bg); color: var(--success); }
+.form-bad { background: var(--danger-bg); color: var(--danger); }
+.form-bad s { opacity: 0.75; }
 
 .plain-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 4px; }
 

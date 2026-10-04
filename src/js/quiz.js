@@ -5,13 +5,29 @@ import { CHOICE_COUNT } from "./config.js";
 
 const ARTICLES = ["en", "ett"];
 
-// Harjoitustavat helpoimmasta vaikeimpaan.
+// Tehtävätyypit ja niistä saatavat pisteet.
 export const MODES = {
-  learn: { name: "Opettele", points: 2 },
-  choice: { name: "Monivalinta", points: 5 },
-  one: { name: "Kirjoita muoto", points: 10 },
-  all: { name: "Koe: kaikki muodot", points: 20 },
+  learn: { points: 2 },
+  choice: { points: 5 },
+  one: { points: 10 },
+  all: { points: 20 },
 };
+
+// Harjoittelussa tehtävätyyppi arvotaan sanan osaamisen mukaan: uusille
+// sanoille helpompia, osatuille vaikeampia.
+const MODES_BY_STARS = [
+  ["learn", "choice", "one", "all"],
+  ["choice", "one", "all"],
+  ["one", "all"],
+  ["one", "all"],
+];
+
+// Lopun kertauksessa kirjoitetaan aina itse.
+const REVIEW_MODES = ["one", "all"];
+
+export function pick(items) {
+  return items[Math.floor(Math.random() * items.length)];
+}
 
 export function shuffle(items) {
   const result = [...items];
@@ -22,25 +38,24 @@ export function shuffle(items) {
   return result;
 }
 
-function randomIndex(length) {
-  return Math.floor(Math.random() * length);
+export function randomMode(stars) {
+  return pick(MODES_BY_STARS[Math.min(stars, MODES_BY_STARS.length - 1)]);
 }
 
-// Valitsee kierrokselle heikoimmin osatut sanat. Samantasoisista arvotaan.
-export function pickWeakest(words, starsOf, count) {
+export function randomReviewMode() {
+  return pick(REVIEW_MODES);
+}
+
+// Valitsee heikoimmin osatut sanat: ensin vähiten tähtiä, sitten eniten
+// virheitä. Samantasoisista arvotaan.
+export function pickHardest(words, starsOf, missesOf, count) {
   return shuffle(words)
-    .sort((a, b) => starsOf(a) - starsOf(b))
+    .sort((a, b) => starsOf(a) - starsOf(b) || missesOf(b) - missesOf(a))
     .slice(0, count);
 }
 
-// Muodostaa kierroksen kysymykset. Jokaisesta sanasta tulee yksi kysymys.
-export function buildRound(words, mode, formCount) {
-  return shuffle(words).map((word) => buildQuestion(word, mode, formCount, words));
-}
-
-// Väärin mennyt kysymys palaa jonoon uutena kysymyksenä samasta sanasta.
 export function buildQuestion(word, mode, formCount, allWords) {
-  const formIndex = mode === "choice" || mode === "one" ? randomIndex(formCount) : null;
+  const formIndex = mode === "choice" || mode === "one" ? Math.floor(Math.random() * formCount) : null;
   const question = { word, mode, formIndex };
   if (mode === "choice") question.choices = buildChoices(word, formIndex, allWords);
   return question;

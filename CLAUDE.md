@@ -22,14 +22,20 @@ julkaistaan GitHub Pagesiin: https://laurakemp.github.io/ruotsin-sanat/
   perusmuoto, preesens, imperfekti ja supiini.
 - Sovelluksessa on aina **yksi ajankohtainen sanalista**. Kun opettaja antaa
   uudet sanat, vanha lista korvataan kokonaan. Vanhoja listoja ei säilytetä.
-- Neljä harjoitustapaa helpoimmasta vaikeimpaan (`MODES` tiedostossa `quiz.js`):
-  Opettele (kortit, itsearvio), Monivalinta, Kirjoita muoto ja Koe (kaikki
-  muodot kirjoittaen).
-- Kierros on `ROUND_SIZE` sanaa (oletus 10), heikoimmin osatut ensin. Väärin
-  mennyt sana palaa kierroksen loppuun, kunnes se menee oikein.
-- Kannustus: pisteet, putkibonus, päiväputki ja sanakohtaiset tähdet (0–3).
-  Tähden saa vain Koe-tilassa, kun kaikki muodot menevät oikein ensimmäisellä
-  yrityksellä. Väärä vastaus vie tähden. Kolme tähteä = opittu.
+- Etusivulla on sanalista-linkki, yksi **Aloita harjoittelu** -painike ja
+  linkki kokeeseen.
+- **Harjoittelu:** `ROUND_SIZE` sanaa (oletus 10), vaikeimmat ensin (vähiten
+  tähtiä, eniten virheitä). Tehtävätyyppi arvotaan jokaiselle sanalle sen
+  osaamisen mukaan (`MODES_BY_STARS` tiedostossa `quiz.js`): Opettele (kortti),
+  Monivalinta, Kirjoita yksi muoto tai Kirjoita kaikki muodot. Lopuksi väärin
+  menneet kerrataan kirjoittaen, kunnes ne menevät oikein.
+- **Koe** (`…/#koe`, oma linkki): kaikkien sanojen kaikki muodot kirjoittaen,
+  ei palautetta kesken kokeen. Lopuksi näkyy, mitkä menivät oikein ja mitkä
+  väärin, sekä painike väärin menneiden sanojen kertaukseen.
+- Kannustus: pisteet, putkibonus, päiväputki, sanakohtaiset tähdet (0–3) ja
+  konfetti. Tähden saa, kun kaikki muodot menevät oikein ensimmäisellä
+  yrityksellä (kaikki muodot -tehtävä tai koe). Väärä vastaus vie tähden.
+  Kolme tähteä = opittu.
 - Edistyminen tallentuu puhelimen `localStorage`en. Tähdet on avainnettu listan
   `id`:llä, joten uusi lista alkaa puhtaalta pöydältä, mutta pisteet säilyvät.
 
@@ -44,11 +50,11 @@ julkaistaan GitHub Pagesiin: https://laurakemp.github.io/ruotsin-sanat/
 
 ```
 src/                  Julkaistava sovellus (GitHub Pages julkaisee tämän kansion)
-  index.html          Kaikki näkymät (PIN, etusivu, sanalista, harjoitus, tulokset)
+  index.html          Kaikki näkymät (PIN, etusivu, sanalista, harjoitus, kertaus, tulokset, koe)
   css/styles.css      Tyylit, värit muuttujina :root-lohkossa, tumma tila mukana
-  js/main.js          Käyttöliittymä: näkymien vaihto ja harjoituksen kulku
+  js/main.js          Käyttöliittymä: reititys (#koe), harjoittelun ja kokeen kulku
   js/quiz.js          Harjoituslogiikka ilman DOMia (kysymykset, tarkistus)
-  js/progress.js      Pisteet, tähdet ja päiväputki
+  js/progress.js      Pisteet, tähdet, virheet ja päiväputki
   js/data.js          Sanalistan lataus ja muodon yhtenäistys
   js/confetti.js      Konfetti onnistumisesta
   js/pin.js           Kevyt PIN-kysely

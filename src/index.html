@@ -45,47 +45,38 @@
         <button id="wordlist-btn" class="btn btn-ghost">Näytä sanalista →</button>
       </div>
 
-      <h2 class="section-title">Valitse harjoitus</h2>
-      <div class="mode-list">
-        <button class="mode-card" data-mode="learn">
-          <span class="mode-icon icon-learn" aria-hidden="true">📖</span>
-          <span class="mode-text"><strong>Opettele</strong><span>Katso muodot ja arvioi, osasitko</span></span>
-          <span class="level" aria-label="Taso 1/4"><i class="on"></i><i></i><i></i><i></i></span>
-        </button>
-        <button class="mode-card" data-mode="choice">
-          <span class="mode-icon icon-choice" aria-hidden="true">🎯</span>
-          <span class="mode-text"><strong>Monivalinta</strong><span>Valitse oikea muoto</span></span>
-          <span class="level" aria-label="Taso 2/4"><i class="on"></i><i class="on"></i><i></i><i></i></span>
-        </button>
-        <button class="mode-card" data-mode="one">
-          <span class="mode-icon icon-one" aria-hidden="true">✏️</span>
-          <span class="mode-text"><strong>Kirjoita muoto</strong><span>Kirjoita yksi muoto ruotsiksi</span></span>
-          <span class="level" aria-label="Taso 3/4"><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
-        </button>
-        <button class="mode-card mode-card-exam" data-mode="all">
-          <span class="mode-icon icon-all" aria-hidden="true">🏆</span>
-          <span class="mode-text"><strong>Koe: kaikki muodot</strong><span>Kirjoita kaikki muodot ja ansaitse tähtiä</span></span>
-          <span class="level" aria-label="Taso 4/4"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i></span>
-        </button>
-      </div>
-      <p class="hint">💡 Sana on opittu, kun kirjoitat kokeessa kaikki sen muodot oikein kolme kertaa.</p>
+      <button id="start-btn" class="btn btn-primary btn-hero">
+        <span>Aloita harjoittelu</span>
+        <small id="start-sub"></small>
+      </button>
+
+      <a href="#koe" class="exam-card">
+        <span class="mode-icon" aria-hidden="true">🏆</span>
+        <span class="exam-text"><strong>Koe</strong><span id="exam-sub"></span></span>
+        <span aria-hidden="true">→</span>
+      </a>
+
+      <p class="hint">💡 Sana on opittu, kun kirjoitat kaikki sen muodot oikein kolme kertaa.</p>
     </section>
 
     <!-- ========== SANALISTA ========== -->
     <section id="screen-words" class="screen" hidden>
       <header class="topbar">
-        <button class="icon-btn back-btn" aria-label="Takaisin">←</button>
+        <button class="icon-btn home-link" aria-label="Takaisin">←</button>
         <h1 class="topbar-title">Sanalista</h1>
-        <span></span>
+        <span class="icon-spacer"></span>
       </header>
       <ul id="word-table" class="word-table"></ul>
     </section>
 
-    <!-- ========== HARJOITUS ========== -->
+    <!-- ========== HARJOITUS JA KOE ========== -->
     <section id="screen-quiz" class="screen" hidden>
       <header class="quiz-bar">
-        <button id="quit-btn" class="icon-btn" aria-label="Lopeta harjoitus">✕</button>
-        <div class="progress-track"><div id="quiz-bar" class="progress-fill"></div></div>
+        <button class="icon-btn home-link" aria-label="Lopeta">✕</button>
+        <div class="quiz-progress">
+          <span id="quiz-phase" class="quiz-phase"></span>
+          <div class="progress-track"><div id="quiz-bar" class="progress-fill"></div></div>
+        </div>
         <span id="streak" class="streak" aria-live="polite"></span>
       </header>
 
@@ -127,7 +118,16 @@
       </div>
     </section>
 
-    <!-- ========== TULOKSET ========== -->
+    <!-- ========== KERTAUKSEN ALKU ========== -->
+    <section id="screen-review-intro" class="screen screen-center" hidden>
+      <div class="hero-emoji" aria-hidden="true">🎯</div>
+      <h1>Lopuksi kerrataan vaikeimmat</h1>
+      <p class="muted">Nämä menivät vielä väärin. Harjoitellaan niitä, kunnes ne menevät oikein.</p>
+      <div class="card"><ul id="review-list" class="plain-list"></ul></div>
+      <button id="review-start-btn" class="btn btn-primary">Aloita kertaus</button>
+    </section>
+
+    <!-- ========== HARJOITTELUN TULOKSET ========== -->
     <section id="screen-result" class="screen screen-center" hidden>
       <div id="result-emoji" class="hero-emoji" aria-hidden="true"></div>
       <h1 id="result-title"></h1>
@@ -144,15 +144,35 @@
         <ul id="star-list" class="plain-list"></ul>
       </div>
 
-      <div id="missed" class="card stack" hidden>
-        <p class="eyebrow">Kertaa vielä nämä</p>
-        <ul id="missed-list" class="plain-list"></ul>
+      <div class="stack full">
+        <button id="again-round-btn" class="btn btn-primary">Harjoittele lisää</button>
+        <button class="btn btn-ghost home-link">Etusivulle</button>
+      </div>
+    </section>
+
+    <!-- ========== KOKEEN TULOKSET ========== -->
+    <section id="screen-exam-result" class="screen" hidden>
+      <div class="screen-center-block">
+        <div id="exam-emoji" class="hero-emoji" aria-hidden="true"></div>
+        <h1 id="exam-title"></h1>
+        <p id="exam-text" class="muted"></p>
       </div>
 
-      <div class="stack full">
-        <button id="retry-btn" class="btn btn-primary" hidden>Harjoittele väärät uudelleen</button>
-        <button id="again-round-btn" class="btn btn-primary">Uusi kierros</button>
-        <button id="home-btn" class="btn btn-ghost">Etusivulle</button>
+      <div class="stat-grid stat-grid-2">
+        <div class="stat"><span id="exam-words" class="stat-value"></span><span class="stat-label">sanaa oikein</span></div>
+        <div class="stat"><span id="exam-forms" class="stat-value"></span><span class="stat-label">muotoa oikein</span></div>
+      </div>
+
+      <button id="exam-review-btn" class="btn btn-primary btn-hero">
+        <span>Kertaa vaikeat sanat</span>
+        <small id="exam-review-sub"></small>
+      </button>
+
+      <ul id="exam-table" class="word-table"></ul>
+
+      <div class="stack">
+        <button id="exam-again-btn" class="btn btn-soft">Tee koe uudelleen</button>
+        <button class="btn btn-ghost home-link">Etusivulle</button>
       </div>
     </section>
 

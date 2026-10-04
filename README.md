@@ -5,20 +5,19 @@ puhelimella.
 
 **Avaa sovellus:** https://laurakemp.github.io/ruotsin-sanat/
 
-## Harjoitukset
+## Toiminta
 
 Kokeen tapaan suomenkielinen sana annetaan ja vastataan ruotsiksi.
 
-| Harjoitus | Mitä tehdään |
-| --- | --- |
-| 📖 Opettele | Katso verbin kaikki muodot ja arvioi, osasitko |
-| 🎯 Monivalinta | Valitse oikea muoto neljästä vaihtoehdosta |
-| ✏️ Kirjoita muoto | Kirjoita yksi pyydetty muoto |
-| 🏆 Koe | Kirjoita kaikki muodot, ja ansaitse tähtiä |
+- **Aloita harjoittelu:** 10 sanaa, vaikeimmat ensin. Tehtävätyypit vaihtelevat
+  satunnaisesti: muotokortit, monivalinta, yhden muodon kirjoitus ja kaikkien
+  muotojen kirjoitus. Lopuksi väärin menneet kerrataan, kunnes ne menevät oikein.
+- **Koe** ([oma linkki](https://laurakemp.github.io/ruotsin-sanat/#koe)):
+  kaikkien sanojen kaikki muodot kirjoittaen. Lopuksi näkyy, mitkä menivät
+  oikein ja mitkä väärin, ja vaikeat sanat voi kerrata heti.
 
-Kierroksella on 10 sanaa, heikoimmin osatut ensin. Väärin menneet sanat tulevat
-uudelleen kierroksen lopussa. Pisteet, putkibonukset, päiväputki ja sanojen
-tähdet kannustavat jatkamaan. Sana on opittu, kun se saa kolme tähteä.
+Pisteet, putkibonukset, päiväputki ja sanojen tähdet kannustavat jatkamaan.
+Sana on opittu, kun se saa kolme tähteä.
 
 ## Ylläpito
 
