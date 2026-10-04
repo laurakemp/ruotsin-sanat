@@ -17,8 +17,8 @@ import {
   formatAnswer,
   pick,
   pickHardest,
-  randomMode,
-  randomReviewMode,
+  STEPS,
+  STEP_NAMES,
   shuffle,
 } from "./quiz.js";
 
@@ -182,6 +182,7 @@ function newSession(kind, words, questions) {
     phase: "main", // harjoittelussa lopuksi "review"
     words,
     queue: questions,
+    mainCount: questions.length,
     index: 0,
     firstTryCorrect: 0,
     retried: new Set(),
@@ -202,7 +203,11 @@ function current() {
 
 function startPractice(words = null) {
   const chosen = words ?? pickHardest(list.words, starsOf, (w) => progress.getMisses(list.id, w), ROUND_SIZE);
-  const questions = chosen.map((word) => buildQuestion(word, randomMode(starsOf(word)), list.forms.length, list.words));
+  // Jokainen sana käy läpi kaikki vaiheet: ensin kaikki monivalintana, sitten
+  // järjestys, yksi muoto ja viimeisenä kaikkien muotojen kirjoitus.
+  const questions = STEPS.flatMap((mode) =>
+    shuffle(chosen).map((word) => buildQuestion(word, mode, list.forms.length, list.words)),
+  );
   newSession("practice", chosen, questions);
 }
 
@@ -215,7 +220,7 @@ function phaseText() {
   const { kind, phase, index, queue } = session;
   if (kind === "exam") return `Harjoituskoe · ${index + 1} / ${queue.length}`;
   if (phase === "review") return `Kertaus · jäljellä ${queue.length - index}`;
-  return `Harjoittelu · ${index + 1} / ${queue.length}`;
+  return `${STEP_NAMES[current().mode]} · ${index + 1} / ${queue.length}`;
 }
 
 function showQuestion() {
@@ -231,19 +236,16 @@ function showQuestion() {
   $("feedback").hidden = true;
 
   showFormHelp(q);
-  $("mode-learn").hidden = q.mode !== "learn";
   $("mode-order").hidden = q.mode !== "order";
   $("mode-choice").hidden = q.mode !== "choice";
   $("mode-write").hidden = q.mode !== "one" && q.mode !== "all";
 
-  if (q.mode === "learn") showLearn(q);
   if (q.mode === "order") showOrder(q);
   if (q.mode === "choice") showChoices(q);
   if (q.mode === "one" || q.mode === "all") showWriteFields(q);
 }
 
 function questionLabel(q) {
-  if (q.mode === "learn") return "Muistatko muodot?";
   if (q.mode === "order") return "Laita muodot järjestykseen";
   if (q.mode === "choice") return `Valitse ${formName(q.formIndex)}`;
   if (q.mode === "one") return `Kirjoita ${formName(q.formIndex)}`;
@@ -279,18 +281,21 @@ function updateStreak() {
 // Kirjaa vastauksen ja palauttaa ansaitut pisteet palautetta varten.
 function registerAnswer(correct) {
   const q = current();
-  const firstTry = !session.retried.has(q.word.fi);
-  const affectsStars = q.mode === "all" && firstTry;
+  // Sama sana tulee kierroksella eri tehtävätyypeissä, joten yritykset
+  // lasketaan sanan ja tehtävätyypin mukaan.
+  const key = `${q.word.fi}:${q.mode}`;
+  const firstTry = !session.retried.has(key);
+  const affectsStars = q.mode === "all" && firstTry && session.phase === "main";
 
   if (!correct) {
     session.streak = 0;
-    session.retried.add(q.word.fi);
+    session.retried.add(key);
     session.missed.set(q.word.fi, q.word);
     progress.addMiss(list.id, q.word);
     if (affectsStars) progress.changeStars(list.id, q.word, -1);
     // Kertauksessa sana palaa jonoon, kunnes se menee oikein.
     if (session.phase === "review") {
-      session.queue.push(buildQuestion(q.word, randomReviewMode(), list.forms.length, list.words));
+      session.queue.push(buildQuestion(q.word, "all", list.forms.length, list.words));
     }
     return { points: 0, bonus: 0 };
   }
@@ -338,37 +343,6 @@ function nextQuestion() {
   if (session.phase === "main" && session.missed.size > 0) return showReviewIntro();
   showPracticeResult();
 }
-
-// ---------- Opettele ----------
-
-function showLearn(q) {
-  $("learn-forms").replaceChildren(
-    ...list.forms.map((_, i) => {
-      const cell = el("div", "form-cell");
-      cell.append(el("span", "form-name", formName(i)), el("strong", "form-value", formatAnswer(q.word.sv[i])));
-      return cell;
-    }),
-  );
-  $("learn-forms").hidden = true;
-  $("reveal-btn").hidden = false;
-  $("self-grade").hidden = true;
-}
-
-$("reveal-btn").addEventListener("click", () => {
-  $("learn-forms").hidden = false;
-  $("reveal-btn").hidden = true;
-  $("self-grade").hidden = false;
-});
-
-$("knew-btn").addEventListener("click", () => {
-  registerAnswer(true);
-  nextQuestion();
-});
-
-$("again-btn").addEventListener("click", () => {
-  registerAnswer(false);
-  nextQuestion();
-});
 
 // ---------- Järjestys ----------
 // Oppilas napauttaa muodot kirjan järjestyksessä. Kun kaikki on valittu,
@@ -526,7 +500,7 @@ function showReviewIntro() {
 $("review-start-btn").addEventListener("click", () => {
   session.phase = "review";
   session.queue = shuffle([...session.missed.values()]).map((word) =>
-    buildQuestion(word, randomReviewMode(), list.forms.length, list.words),
+    buildQuestion(word, "all", list.forms.length, list.words),
   );
   session.index = 0;
   showScreen("quiz");
@@ -537,7 +511,7 @@ $("review-start-btn").addEventListener("click", () => {
 
 function showPracticeResult() {
   progress.markPracticedToday();
-  const size = session.words.length;
+  const size = session.mainCount;
   const ratio = session.firstTryCorrect / size;
 
   const [emoji, title] =

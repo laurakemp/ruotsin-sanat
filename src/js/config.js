@@ -5,8 +5,9 @@
 // Uuden tiivisteen saa komennolla: node scripts/pin-hash.mjs 1234
 export const PIN_HASH = "";
 
-// Montako sanaa yhdellä kierroksella harjoitellaan. Heikoimmat tulevat ensin.
-export const ROUND_SIZE = 10;
+// Montako sanaa yhdellä kierroksella harjoitellaan. Jokainen sana käy läpi
+// kaikki neljä tehtävätyyppiä, joten kierroksella on ROUND_SIZE × 4 tehtävää.
+export const ROUND_SIZE = 5;
 
 // Montako vaihtoehtoa monivalinnassa näytetään.
 export const CHOICE_COUNT = 4;

@@ -7,24 +7,22 @@ const ARTICLES = ["en", "ett"];
 
 // Tehtävätyypit ja niistä saatavat pisteet.
 export const MODES = {
-  learn: { points: 2 },
   choice: { points: 5 },
   order: { points: 5 },
   one: { points: 10 },
   all: { points: 20 },
 };
 
-// Harjoittelussa tehtävätyyppi arvotaan sanan osaamisen mukaan: uusille
-// sanoille helpompia, osatuille vaikeampia.
-const MODES_BY_STARS = [
-  ["learn", "order", "choice", "one", "all"],
-  ["order", "choice", "one", "all"],
-  ["one", "all"],
-  ["one", "all"],
-];
+// Harjoittelukierroksella jokainen sana käy läpi nämä vaiheet helpoimmasta
+// vaikeimpaan: ensin monivalinta, viimeisenä kaikkien muotojen kirjoitus.
+export const STEPS = ["choice", "order", "one", "all"];
 
-// Lopun kertauksessa kirjoitetaan aina itse.
-const REVIEW_MODES = ["one", "all"];
+export const STEP_NAMES = {
+  choice: "Monivalinta",
+  order: "Järjestys",
+  one: "Kirjoita muoto",
+  all: "Kaikki muodot",
+};
 
 export function pick(items) {
   return items[Math.floor(Math.random() * items.length)];
@@ -37,14 +35,6 @@ export function shuffle(items) {
     [result[i], result[j]] = [result[j], result[i]];
   }
   return result;
-}
-
-export function randomMode(stars) {
-  return pick(MODES_BY_STARS[Math.min(stars, MODES_BY_STARS.length - 1)]);
-}
-
-export function randomReviewMode() {
-  return pick(REVIEW_MODES);
 }
 
 // Valitsee heikoimmin osatut sanat: ensin vähiten tähtiä, sitten eniten
