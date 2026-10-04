@@ -14,7 +14,8 @@ Kokeen tapaan suomenkielinen sana annetaan ja vastataan ruotsiksi.
   muotojen kirjoitus. Lopuksi väärin menneet kerrataan, kunnes ne menevät oikein.
 - **Koe** ([oma linkki](https://laurakemp.github.io/ruotsin-sanat/#koe)):
   kaikkien sanojen kaikki muodot kirjoittaen. Lopuksi näkyy, mitkä menivät
-  oikein ja mitkä väärin, ja vaikeat sanat voi kerrata heti.
+  oikein ja mitkä väärin, ja vaikeat sanat voi kerrata heti. Täysillä pisteillä
+  ansaitsee 5 € palkkion 💶.
 
 Pisteet, putkibonukset, päiväputki ja sanojen tähdet kannustavat jatkamaan.
 Sana on opittu, kun se saa kolme tähteä.

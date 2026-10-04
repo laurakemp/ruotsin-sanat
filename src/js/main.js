@@ -5,7 +5,7 @@
 // Koe (#koe): kaikkien sanojen kaikki muodot ilman palautetta. Lopuksi tulokset
 // ja linkki vaikeiden sanojen kertaukseen.
 
-import { ROUND_SIZE, STREAK_BONUS_EVERY, STREAK_BONUS_POINTS } from "./config.js";
+import { EXAM_REWARD, REWARD_NEAR_WORDS, ROUND_SIZE, STREAK_BONUS_EVERY, STREAK_BONUS_POINTS } from "./config.js";
 import { celebrate } from "./confetti.js";
 import { loadList } from "./data.js";
 import { isPinRequired, tryUnlock } from "./pin.js";
@@ -122,6 +122,9 @@ function openHome() {
   $("goal-message").textContent = goalMessage(learned, total);
   $("start-sub").textContent = `${Math.min(ROUND_SIZE, total)} sanaa, vaikeimmat ensin`;
   $("exam-sub").textContent = `Kirjoita kaikkien ${total} sanan kaikki muodot`;
+  $("exam-reward").textContent = progress.getRewardDate(list.id)
+    ? `✓ ${EXAM_REWARD} palkkio ansaittu!`
+    : `💶 Täysillä pisteillä saat ${EXAM_REWARD}!`;
   showScreen("home");
 }
 
@@ -510,6 +513,8 @@ function showExamResult() {
   $("exam-words").textContent = `${wordsOk}/${results.length}`;
   $("exam-forms").textContent = `${formsOk}/${formsAll.length}`;
 
+  showReward(results.length - wordsOk);
+
   const wrongWords = results.filter((r) => !r.ok).map((r) => r.word);
   $("exam-review-btn").hidden = wrongWords.length === 0;
   $("exam-review-sub").textContent = `${wrongWords.length} sanaa, jotka menivät väärin`;
@@ -520,6 +525,28 @@ function showExamResult() {
 
   showScreen("exam-result");
   if (ratio >= 0.8) celebrate();
+}
+
+// Täysistä pisteistä palkkio, lähellä olevalle kannustus yrittää uudelleen.
+function showReward(wrongCount) {
+  const card = $("reward-card");
+  card.hidden = wrongCount > REWARD_NEAR_WORDS;
+  card.classList.toggle("reward-won", wrongCount === 0);
+
+  if (wrongCount === 0) {
+    const now = new Date();
+    progress.saveRewardDate(list.id, now.toISOString());
+    $("reward-emoji").textContent = "💶";
+    $("reward-title").textContent = `Ansaitsit ${EXAM_REWARD} palkkion!`;
+    $("reward-text").textContent = "Täydet pisteet! Näytä tämä ruutu kotona, niin saat palkkiosi.";
+    $("reward-meta").textContent = `${list.title} · ${now.toLocaleDateString("fi-FI")} klo ${now
+      .toLocaleTimeString("fi-FI", { hour: "2-digit", minute: "2-digit" })}`;
+  } else {
+    $("reward-emoji").textContent = "💪";
+    $("reward-title").textContent = `Enää ${wrongCount} ${wrongCount === 1 ? "sana" : "sanaa"} ${EXAM_REWARD} palkkioon!`;
+    $("reward-text").textContent = "Kertaa vaikeat sanat ja tee koe uudelleen. Täysillä pisteillä palkkio on sinun.";
+    $("reward-meta").textContent = "";
+  }
 }
 
 function examRow({ word, answers, ok }) {

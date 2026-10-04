@@ -82,3 +82,16 @@ export function markPracticedToday() {
   save("dayStreak", updated);
   return updated.days;
 }
+
+// ---------- Kokeen palkkio ----------
+// Tallennetaan, milloin nykyisen listan kokeesta saatiin täydet pisteet.
+
+export function getRewardDate(listId) {
+  return load("rewards", {})[listId] ?? null;
+}
+
+export function saveRewardDate(listId, date) {
+  const rewards = load("rewards", {});
+  rewards[listId] ??= date;
+  save("rewards", rewards);
+}

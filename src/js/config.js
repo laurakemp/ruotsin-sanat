@@ -14,3 +14,9 @@ export const CHOICE_COUNT = 4;
 // Joka n:s oikea vastaus putkeen antaa bonuspisteitä.
 export const STREAK_BONUS_EVERY = 5;
 export const STREAK_BONUS_POINTS = 10;
+
+// Palkkio täysistä pisteistä kokeessa. Näytetään etusivulla ja kokeen tuloksissa.
+export const EXAM_REWARD = "5 €";
+
+// Kuinka monen sanan päässä täysistä pisteistä palkkiosta muistutetaan.
+export const REWARD_NEAR_WORDS = 3;

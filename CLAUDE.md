@@ -36,6 +36,11 @@ julkaistaan GitHub Pagesiin: https://laurakemp.github.io/ruotsin-sanat/
   konfetti. Tähden saa, kun kaikki muodot menevät oikein ensimmäisellä
   yrityksellä (kaikki muodot -tehtävä tai koe). Väärä vastaus vie tähden.
   Kolme tähteä = opittu.
+- **Palkkio:** kokeen täysistä pisteistä näytetään palkkiokortti (`EXAM_REWARD`,
+  oletus 5 €) päivämäärän ja kellonajan kanssa, jotta vanhempi näkee tuloksen
+  olevan tuore. Jos virheitä on enintään `REWARD_NEAR_WORDS`, kortti kannustaa
+  yrittämään uudelleen. Etusivun koekortti kertoo palkkiosta ja siitä, onko se
+  jo ansaittu nykyisellä listalla.
 - Edistyminen tallentuu puhelimen `localStorage`en. Tähdet on avainnettu listan
   `id`:llä, joten uusi lista alkaa puhtaalta pöydältä, mutta pisteet säilyvät.
 

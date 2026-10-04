@@ -52,7 +52,11 @@
 
       <a href="#koe" class="exam-card">
         <span class="mode-icon" aria-hidden="true">🏆</span>
-        <span class="exam-text"><strong>Koe</strong><span id="exam-sub"></span></span>
+        <span class="exam-text">
+          <strong>Koe</strong>
+          <span id="exam-sub"></span>
+          <span id="exam-reward" class="exam-reward"></span>
+        </span>
         <span aria-hidden="true">→</span>
       </a>
 
@@ -156,6 +160,13 @@
         <div id="exam-emoji" class="hero-emoji" aria-hidden="true"></div>
         <h1 id="exam-title"></h1>
         <p id="exam-text" class="muted"></p>
+      </div>
+
+      <div id="reward-card" class="reward-card" role="status" hidden>
+        <div id="reward-emoji" class="reward-emoji" aria-hidden="true"></div>
+        <p id="reward-title" class="reward-title"></p>
+        <p id="reward-text"></p>
+        <p id="reward-meta" class="reward-meta"></p>
       </div>
 
       <div class="stat-grid stat-grid-2">
