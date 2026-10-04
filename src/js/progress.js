@@ -1,7 +1,7 @@
 // Edistyminen: pisteet, sanojen tähdet, virheet ja päiväputki. Tallentuu
 // puhelimeen.
 
-import { load, save } from "./storage.js";
+import { load, save } from "./storage.js?v=__VERSION__";
 
 export const MAX_STARS = 3;
 

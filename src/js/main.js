@@ -5,11 +5,10 @@
 // Koe (#koe): kaikkien sanojen kaikki muodot ilman palautetta. Lopuksi tulokset
 // ja linkki vaikeiden sanojen kertaukseen.
 
-import { REWARD_NEAR_WORDS, SCHOOL_REWARD, ROUND_SIZE, STREAK_BONUS_EVERY, STREAK_BONUS_POINTS } from "./config.js";
-import { celebrate } from "./confetti.js";
-import { loadList } from "./data.js";
-import { isPinRequired, tryUnlock } from "./pin.js";
-import * as progress from "./progress.js";
+import { REWARD_NEAR_WORDS, SCHOOL_REWARD, ROUND_SIZE, STREAK_BONUS_EVERY, STREAK_BONUS_POINTS } from "./config.js?v=__VERSION__";
+import { celebrate } from "./confetti.js?v=__VERSION__";
+import { loadList } from "./data.js?v=__VERSION__";
+import * as progress from "./progress.js?v=__VERSION__";
 import {
   MODES,
   buildQuestion,
@@ -20,7 +19,7 @@ import {
   STEPS,
   STEP_NAMES,
   shuffle,
-} from "./quiz.js";
+} from "./quiz.js?v=__VERSION__";
 
 const $ = (id) => document.getElementById(id);
 
@@ -71,26 +70,7 @@ function formHint(i) {
   return list.formHints[i] ?? "";
 }
 
-// ---------- Käynnistys, PIN ja reititys ----------
-
-async function init() {
-  if (isPinRequired()) {
-    showScreen("pin");
-    $("pin-input").focus();
-    return;
-  }
-  await route();
-}
-
-$("pin-form").addEventListener("submit", async (event) => {
-  event.preventDefault();
-  if (await tryUnlock($("pin-input").value)) {
-    await route();
-  } else {
-    $("pin-error").hidden = false;
-    $("pin-input").select();
-  }
-});
+// ---------- Reititys ----------
 
 // Osoite …/#koe avaa suoraan kokeen, muuten etusivu.
 async function route() {
@@ -99,9 +79,7 @@ async function route() {
   else openHome();
 }
 
-window.addEventListener("hashchange", () => {
-  if (!isPinRequired()) route();
-});
+window.addEventListener("hashchange", route);
 
 // Poistaa #koe-osoitteen, jotta selaimen päivitys ei avaa koetta uudelleen.
 function clearHash() {
@@ -633,4 +611,4 @@ $("exam-review-btn").addEventListener("click", () => {
 
 $("exam-again-btn").addEventListener("click", startExam);
 
-init();
+route();

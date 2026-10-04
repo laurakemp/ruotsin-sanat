@@ -65,20 +65,18 @@ julkaistaan GitHub Pagesiin: https://laurakemp.github.io/ruotsin-sanat/
 
 ```
 src/                  Julkaistava sovellus (GitHub Pages julkaisee tämän kansion)
-  index.html          Kaikki näkymät (PIN, etusivu, sanalista, harjoitus, kertaus, tulokset, koe)
+  index.html          Kaikki näkymät (etusivu, sanalista, harjoitus, kertaus, tulokset, koe)
   css/styles.css      Tyylit, värit muuttujina :root-lohkossa, tumma tila mukana
   js/main.js          Käyttöliittymä: reititys (#koe), harjoittelun ja kokeen kulku
   js/quiz.js          Harjoituslogiikka ilman DOMia (kysymykset, tarkistus)
   js/progress.js      Pisteet, tähdet, virheet ja päiväputki
   js/data.js          Sanalistan lataus ja muodon yhtenäistys
   js/confetti.js      Konfetti onnistumisesta
-  js/pin.js           Kevyt PIN-kysely
   js/storage.js       localStorage-kääre (virheet niellään)
-  js/config.js        Asetukset (PIN_HASH, kierroksen koko, bonukset)
+  js/config.js        Asetukset (kierroksen koko, bonukset, palkkio)
   data/words.json     Ajankohtainen sanalista
 scripts/              Apuskriptit (Node), eivät mene julkaisuun
   validate-words.mjs  Tarkistaa words.json-tiedoston muodon
-  pin-hash.mjs        Laskee PIN-tiivisteen config.js-tiedostoon
 docs/                 Ohjeet Lauralle
 .github/workflows/    GitHub Actions: tarkistus ja julkaisu
 ```
@@ -125,14 +123,16 @@ Laura lähettää kuvan kirjan sanastosivusta. Tee näin:
 4. Näytä Lauralle lista tarkistettavaksi (suomi – ruotsin muodot).
 5. Commit ("Vaihda sanalista: <kuvaus>") ja push `main`-haaraan.
 
-## PIN-koodi
+## Välimuisti ja versiot
 
-- Kevyt este, **ei oikea tietoturvasuoja**: repo on julkinen ja sanat näkyvät
-  koodissa. Älä lisää sovellukseen henkilötietoja (esim. lapsen nimeä).
-- `PIN_HASH` tiedostossa `src/js/config.js` on SHA-256 merkkijonosta
-  `ruotsin-sanat:<PIN>`. Tyhjä arvo poistaa PIN-kyselyn.
-- Uusi tiiviste: `node scripts/pin-hash.mjs <PIN>`. Älä kirjoita itse PIN-koodia
-  repoon, commit-viesteihin tai muualle.
+- Kaikissa sovelluksen sisäisissä osoitteissa on pääte `?v=__VERSION__`
+  (`index.html`:n CSS ja JS sekä jokainen `import`). Julkaisu-workflow korvaa
+  sen commitin tunnisteella, jotta puhelimen selain ei sekoita vanhoja ja uusia
+  tiedostoja. **Lisää pääte jokaiseen uuteen `import`-riviin.** Käytä samaa
+  päätettä kaikkialla, jotta moduuli ladataan vain kerran.
+- Jos sovellus ei käynnisty 4 sekunnissa, `index.html` näyttää Päivitä-painikkeen.
+- Sovelluksessa ei ole PIN-koodia, eikä sitä tarvita. Repo on julkinen, joten
+  älä lisää henkilötietoja.
 
 ## Paikallinen ajo
 

@@ -9,23 +9,12 @@
   <meta name="apple-mobile-web-app-title" content="Ruotsin sanat">
   <title>Ruotsin sanat</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇸🇪</text></svg>">
-  <link rel="stylesheet" href="css/styles.css">
-  <script type="module" src="js/main.js"></script>
+  <!-- __VERSION__ korvataan julkaisussa versiolla, jotta selain hakee aina uudet tiedostot. -->
+  <link rel="stylesheet" href="css/styles.css?v=__VERSION__">
+  <script type="module" src="js/main.js?v=__VERSION__"></script>
 </head>
 <body>
   <main class="app">
-
-    <!-- ========== PIN ========== -->
-    <section id="screen-pin" class="screen screen-center" hidden>
-      <div class="hero-emoji" aria-hidden="true">🇸🇪</div>
-      <h1>Ruotsin sanat</h1>
-      <form id="pin-form" class="stack">
-        <label for="pin-input" class="muted">Syötä PIN-koodi</label>
-        <input id="pin-input" class="input input-pin" type="password" inputmode="numeric" autocomplete="off" required>
-        <p id="pin-error" class="banner banner-wrong" role="alert" hidden>Väärä koodi, yritä uudelleen.</p>
-        <button type="submit" class="btn btn-primary">Avaa</button>
-      </form>
-    </section>
 
     <!-- ========== ETUSIVU ========== -->
     <section id="screen-home" class="screen" hidden>
@@ -199,5 +188,20 @@
     </section>
 
   </main>
+
+  <!-- Näytetään, jos sovellus ei käynnisty (esim. selain on muistanut vanhoja tiedostoja). -->
+  <div id="load-error" class="screen screen-center" hidden>
+    <div class="hero-emoji" aria-hidden="true">🔄</div>
+    <h1>Sovellus ei latautunut</h1>
+    <p class="muted">Päivitä sivu, niin uusin versio latautuu.</p>
+    <button class="btn btn-primary" onclick="location.reload()">Päivitä</button>
+  </div>
+  <script>
+    setTimeout(() => {
+      if (![...document.querySelectorAll(".app .screen")].some((s) => !s.hidden)) {
+        document.getElementById("load-error").hidden = false;
+      }
+    }, 4000);
+  </script>
 </body>
 </html>

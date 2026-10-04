@@ -1,7 +1,7 @@
 // Harjoittelun logiikka ilman käyttöliittymää: kysymysten muodostus ja
 // vastausten tarkistus.
 
-import { CHOICE_COUNT } from "./config.js";
+import { CHOICE_COUNT } from "./config.js?v=__VERSION__";
 
 const ARTICLES = ["en", "ett"];
 

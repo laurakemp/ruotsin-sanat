@@ -37,6 +37,8 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - uses: actions/checkout@v7
+      - name: Lisää versionumero tiedostojen osoitteisiin
+        run: grep -rl "__VERSION__" src | xargs sed -i "s/__VERSION__/${GITHUB_SHA::7}/g"
       - uses: actions/configure-pages@v6
       - uses: actions/upload-pages-artifact@v5
         with:
