@@ -29,18 +29,18 @@ julkaistaan GitHub Pagesiin: https://laurakemp.github.io/ruotsin-sanat/
   osaamisen mukaan (`MODES_BY_STARS` tiedostossa `quiz.js`): Opettele (kortti),
   Monivalinta, Kirjoita yksi muoto tai Kirjoita kaikki muodot. Lopuksi väärin
   menneet kerrataan kirjoittaen, kunnes ne menevät oikein.
-- **Koe** (`…/#koe`, oma linkki): kaikkien sanojen kaikki muodot kirjoittaen,
+- **Harjoituskoe** (`…/#koe`, oma linkki): kaikkien sanojen kaikki muodot kirjoittaen,
   ei palautetta kesken kokeen. Lopuksi näkyy, mitkä menivät oikein ja mitkä
   väärin, sekä painike väärin menneiden sanojen kertaukseen.
 - Kannustus: pisteet, putkibonus, päiväputki, sanakohtaiset tähdet (0–3) ja
   konfetti. Tähden saa, kun kaikki muodot menevät oikein ensimmäisellä
   yrityksellä (kaikki muodot -tehtävä tai koe). Väärä vastaus vie tähden.
   Kolme tähteä = opittu.
-- **Palkkio:** kokeen täysistä pisteistä näytetään palkkiokortti (`EXAM_REWARD`,
-  oletus 5 €) päivämäärän ja kellonajan kanssa, jotta vanhempi näkee tuloksen
-  olevan tuore. Jos virheitä on enintään `REWARD_NEAR_WORDS`, kortti kannustaa
-  yrittämään uudelleen. Etusivun koekortti kertoo palkkiosta ja siitä, onko se
-  jo ansaittu nykyisellä listalla.
+- **Palkkio:** oppilas saa `SCHOOL_REWARD` (5 €) **koulun kokeen** täysistä
+  pisteistä, ei sovelluksen kokeesta. Sovelluksen koe on harjoituskoe: täysillä
+  pisteillä se kertoo, että oppilas on valmis koulun kokeeseen, ja muistuttaa
+  palkkiosta. Jos virheitä on enintään `REWARD_NEAR_WORDS`, kortti kannustaa
+  yrittämään uudelleen. Etusivu näyttää palkkion ja valmiuden.
 - Edistyminen tallentuu puhelimen `localStorage`en. Tähdet on avainnettu listan
   `id`:llä, joten uusi lista alkaa puhtaalta pöydältä, mutta pisteet säilyvät.
 

@@ -83,15 +83,15 @@ export function markPracticedToday() {
   return updated.days;
 }
 
-// ---------- Kokeen palkkio ----------
-// Tallennetaan, milloin nykyisen listan kokeesta saatiin täydet pisteet.
+// ---------- Valmius koulun kokeeseen ----------
+// Tallennetaan, kun nykyisen listan harjoituskokeesta on saatu täydet pisteet.
 
-export function getRewardDate(listId) {
-  return load("rewards", {})[listId] ?? null;
+export function isExamReady(listId) {
+  return load("examReady", {})[listId] === true;
 }
 
-export function saveRewardDate(listId, date) {
-  const rewards = load("rewards", {});
-  rewards[listId] ??= date;
-  save("rewards", rewards);
+export function markExamReady(listId) {
+  const ready = load("examReady", {});
+  ready[listId] = true;
+  save("examReady", ready);
 }

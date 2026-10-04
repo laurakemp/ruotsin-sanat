@@ -5,7 +5,7 @@
 // Koe (#koe): kaikkien sanojen kaikki muodot ilman palautetta. Lopuksi tulokset
 // ja linkki vaikeiden sanojen kertaukseen.
 
-import { EXAM_REWARD, REWARD_NEAR_WORDS, ROUND_SIZE, STREAK_BONUS_EVERY, STREAK_BONUS_POINTS } from "./config.js";
+import { REWARD_NEAR_WORDS, SCHOOL_REWARD, ROUND_SIZE, STREAK_BONUS_EVERY, STREAK_BONUS_POINTS } from "./config.js";
 import { celebrate } from "./confetti.js";
 import { loadList } from "./data.js";
 import { isPinRequired, tryUnlock } from "./pin.js";
@@ -122,9 +122,9 @@ function openHome() {
   $("goal-message").textContent = goalMessage(learned, total);
   $("start-sub").textContent = `${Math.min(ROUND_SIZE, total)} sanaa, vaikeimmat ensin`;
   $("exam-sub").textContent = `Kirjoita kaikkien ${total} sanan kaikki muodot`;
-  $("exam-reward").textContent = progress.getRewardDate(list.id)
-    ? `✓ ${EXAM_REWARD} palkkio ansaittu!`
-    : `💶 Täysillä pisteillä saat ${EXAM_REWARD}!`;
+  $("exam-reward").textContent = progress.isExamReady(list.id)
+    ? "✓ Olet valmis koulun kokeeseen!"
+    : `💶 Koulun kokeen täysistä pisteistä ${SCHOOL_REWARD}`;
   showScreen("home");
 }
 
@@ -189,7 +189,7 @@ function startExam() {
 
 function phaseText() {
   const { kind, phase, index, queue } = session;
-  if (kind === "exam") return `Koe · ${index + 1} / ${queue.length}`;
+  if (kind === "exam") return `Harjoituskoe · ${index + 1} / ${queue.length}`;
   if (phase === "review") return `Kertaus · jäljellä ${queue.length - index}`;
   return `Harjoittelu · ${index + 1} / ${queue.length}`;
 }
@@ -502,8 +502,8 @@ function showExamResult() {
 
   const [emoji, title] =
     ratio === 1 ? ["🏆", "Täydet pisteet!"]
-    : ratio >= 0.8 ? ["🌟", "Erinomainen koe!"]
-    : ratio >= 0.5 ? ["💪", "Hyvä koe!"]
+    : ratio >= 0.8 ? ["🌟", "Erinomainen tulos!"]
+    : ratio >= 0.5 ? ["💪", "Hyvä tulos!"]
     : ["🌱", "Hyvä alku!"];
 
   $("exam-emoji").textContent = emoji;
@@ -527,25 +527,23 @@ function showExamResult() {
   if (ratio >= 0.8) celebrate();
 }
 
-// Täysistä pisteistä palkkio, lähellä olevalle kannustus yrittää uudelleen.
+// Täydet pisteet harjoituskokeessa = valmis koulun kokeeseen, jonka täysistä
+// pisteistä saa palkkion. Lähellä olevaa kannustetaan yrittämään uudelleen.
 function showReward(wrongCount) {
   const card = $("reward-card");
   card.hidden = wrongCount > REWARD_NEAR_WORDS;
   card.classList.toggle("reward-won", wrongCount === 0);
 
   if (wrongCount === 0) {
-    const now = new Date();
-    progress.saveRewardDate(list.id, now.toISOString());
+    progress.markExamReady(list.id);
     $("reward-emoji").textContent = "💶";
-    $("reward-title").textContent = `Ansaitsit ${EXAM_REWARD} palkkion!`;
-    $("reward-text").textContent = "Täydet pisteet! Näytä tämä ruutu kotona, niin saat palkkiosi.";
-    $("reward-meta").textContent = `${list.title} · ${now.toLocaleDateString("fi-FI")} klo ${now
-      .toLocaleTimeString("fi-FI", { hour: "2-digit", minute: "2-digit" })}`;
+    $("reward-title").textContent = "Olet valmis koulun kokeeseen!";
+    $("reward-text").textContent = `Kun saat koulun kokeesta täydet pisteet, saat ${SCHOOL_REWARD} palkkion. Tsemppiä!`;
   } else {
     $("reward-emoji").textContent = "💪";
-    $("reward-title").textContent = `Enää ${wrongCount} ${wrongCount === 1 ? "sana" : "sanaa"} ${EXAM_REWARD} palkkioon!`;
-    $("reward-text").textContent = "Kertaa vaikeat sanat ja tee koe uudelleen. Täysillä pisteillä palkkio on sinun.";
-    $("reward-meta").textContent = "";
+    $("reward-title").textContent = `Enää ${wrongCount} ${wrongCount === 1 ? "sana" : "sanaa"} täysiin pisteisiin!`;
+    $("reward-text").textContent =
+      `Kertaa vaikeat sanat ja tee harjoituskoe uudelleen. Koulun kokeen täysistä pisteistä saat ${SCHOOL_REWARD}.`;
   }
 }
 

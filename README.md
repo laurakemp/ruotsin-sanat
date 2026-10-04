@@ -12,10 +12,10 @@ Kokeen tapaan suomenkielinen sana annetaan ja vastataan ruotsiksi.
 - **Aloita harjoittelu:** 10 sanaa, vaikeimmat ensin. Tehtävätyypit vaihtelevat
   satunnaisesti: muotokortit, monivalinta, yhden muodon kirjoitus ja kaikkien
   muotojen kirjoitus. Lopuksi väärin menneet kerrataan, kunnes ne menevät oikein.
-- **Koe** ([oma linkki](https://laurakemp.github.io/ruotsin-sanat/#koe)):
+- **Harjoituskoe** ([oma linkki](https://laurakemp.github.io/ruotsin-sanat/#koe)):
   kaikkien sanojen kaikki muodot kirjoittaen. Lopuksi näkyy, mitkä menivät
-  oikein ja mitkä väärin, ja vaikeat sanat voi kerrata heti. Täysillä pisteillä
-  ansaitsee 5 € palkkion 💶.
+  oikein ja mitkä väärin, ja vaikeat sanat voi kerrata heti. Täydet pisteet
+  kertovat, että on valmis koulun kokeeseen, jonka täysistä pisteistä saa 5 € 💶.
 
 Pisteet, putkibonukset, päiväputki ja sanojen tähdet kannustavat jatkamaan.
 Sana on opittu, kun se saa kolme tähteä.

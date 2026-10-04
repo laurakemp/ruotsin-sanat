@@ -255,8 +255,6 @@ h1, h2, p { margin: 0; }
 .reward-emoji { font-size: 3rem; line-height: 1; }
 .reward-won .reward-emoji { animation: wiggle 1s ease 0.3s 2; }
 .reward-title { font-size: 1.3rem; font-weight: 800; }
-.reward-meta { font-size: 0.85rem; opacity: 0.75; }
-.reward-meta:empty { display: none; }
 
 @keyframes wiggle { 25% { transform: rotate(-12deg) scale(1.1); } 75% { transform: rotate(12deg) scale(1.1); } }
 

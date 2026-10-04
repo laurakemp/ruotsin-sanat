@@ -15,8 +15,9 @@ export const CHOICE_COUNT = 4;
 export const STREAK_BONUS_EVERY = 5;
 export const STREAK_BONUS_POINTS = 10;
 
-// Palkkio täysistä pisteistä kokeessa. Näytetään etusivulla ja kokeen tuloksissa.
-export const EXAM_REWARD = "5 €";
+// Palkkio koulun kokeen täysistä pisteistä. Sovelluksen harjoituskoe kertoo,
+// milloin oppilas on valmis koulun kokeeseen.
+export const SCHOOL_REWARD = "5 €";
 
-// Kuinka monen sanan päässä täysistä pisteistä palkkiosta muistutetaan.
+// Kuinka monen sanan päässä täysistä pisteistä harjoituskokeessa kannustetaan.
 export const REWARD_NEAR_WORDS = 3;
