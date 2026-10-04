@@ -1,0 +1,7 @@
+# Pitää GitHub Actions -työkalujen versiot ajan tasalla.
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

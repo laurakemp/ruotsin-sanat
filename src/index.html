@@ -1,0 +1,98 @@
+<!doctype html>
+<html lang="fi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#005b99">
+  <title>Ruotsin sanat</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🇸🇪</text></svg>">
+  <link rel="stylesheet" href="css/styles.css">
+  <script type="module" src="js/main.js"></script>
+</head>
+<body>
+  <main class="app">
+    <header class="app-header">
+      <h1>Ruotsin sanat <span aria-hidden="true">🇸🇪</span></h1>
+    </header>
+
+    <!-- PIN-kysely -->
+    <section id="screen-pin" class="screen" hidden>
+      <form id="pin-form" class="card stack">
+        <label for="pin-input">Syötä PIN-koodi</label>
+        <input id="pin-input" type="password" inputmode="numeric" autocomplete="off" required>
+        <p id="pin-error" class="feedback wrong" hidden>Väärä koodi, yritä uudelleen.</p>
+        <button type="submit" class="btn primary">Avaa</button>
+      </form>
+    </section>
+
+    <!-- Valikko -->
+    <section id="screen-menu" class="screen" hidden>
+      <div class="card stack">
+        <h2>Sanalista</h2>
+        <div id="list-options" class="options" role="radiogroup" aria-label="Sanalista"></div>
+
+        <h2>Harjoitus</h2>
+        <div class="options" role="radiogroup" aria-label="Harjoitus">
+          <label class="option"><input type="radio" name="mode" value="cards" checked> Sanakortit</label>
+          <label class="option"><input type="radio" name="mode" value="choice"> Monivalinta</label>
+          <label class="option"><input type="radio" name="mode" value="write"> Kirjoitus</label>
+        </div>
+
+        <h2>Suunta</h2>
+        <div class="options" role="radiogroup" aria-label="Suunta">
+          <label class="option"><input type="radio" name="direction" value="fi-sv" checked> suomi → ruotsi</label>
+          <label class="option"><input type="radio" name="direction" value="sv-fi"> ruotsi → suomi</label>
+        </div>
+
+        <button id="start-btn" class="btn primary">Aloita</button>
+      </div>
+    </section>
+
+    <!-- Harjoitus -->
+    <section id="screen-quiz" class="screen" hidden>
+      <div class="card stack">
+        <div class="quiz-top">
+          <button id="quit-btn" class="btn link">← Valikkoon</button>
+          <span id="progress" class="progress"></span>
+        </div>
+        <p id="prompt" class="prompt"></p>
+
+        <div id="mode-cards" class="stack" hidden>
+          <p id="card-answer" class="answer" hidden></p>
+          <button id="reveal-btn" class="btn primary">Näytä vastaus</button>
+          <div id="self-grade" class="row" hidden>
+            <button id="knew-btn" class="btn good">Osasin</button>
+            <button id="didnt-btn" class="btn bad">En osannut</button>
+          </div>
+        </div>
+
+        <div id="mode-choice" class="stack" hidden>
+          <div id="choices" class="choices"></div>
+        </div>
+
+        <form id="mode-write" class="stack" hidden>
+          <input id="write-input" type="text" autocomplete="off" autocapitalize="off" spellcheck="false" aria-label="Vastaus">
+          <button type="submit" id="check-btn" class="btn primary">Tarkista</button>
+        </form>
+
+        <p id="feedback" class="feedback" hidden></p>
+        <button id="next-btn" class="btn primary" hidden>Seuraava</button>
+      </div>
+    </section>
+
+    <!-- Tulokset -->
+    <section id="screen-result" class="screen" hidden>
+      <div class="card stack">
+        <h2 id="result-title"></h2>
+        <div id="missed" class="stack" hidden>
+          <p>Harjoittele vielä näitä:</p>
+          <ul id="missed-list" class="missed-list"></ul>
+          <button id="retry-btn" class="btn primary">Harjoittele väärät uudelleen</button>
+        </div>
+        <button id="menu-btn" class="btn">Valikkoon</button>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

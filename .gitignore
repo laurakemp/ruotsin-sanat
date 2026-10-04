@@ -1,1 +1,13 @@
+# macOS
 .DS_Store
+
+# Editorit
+.vscode/
+.idea/
+
+# Clauden paikalliset asetukset (jaetut asetukset .claude/-kansiossa pidetään mukana)
+.claude/settings.local.json
+
+# Mahdolliset riippuvuudet ja lokit
+node_modules/
+*.log

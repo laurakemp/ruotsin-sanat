@@ -1,0 +1,32 @@
+{
+  "lists": [
+    {
+      "id": "esimerkki-elaimet",
+      "name": "Eläimet (esimerkki)",
+      "words": [
+        { "fi": "koira", "sv": "en hund" },
+        { "fi": "kissa", "sv": "en katt" },
+        { "fi": "hevonen", "sv": "en häst" },
+        { "fi": "lintu", "sv": "en fågel" },
+        { "fi": "kala", "sv": "en fisk" },
+        { "fi": "lehmä", "sv": "en ko" },
+        { "fi": "hiiri", "sv": "en mus" },
+        { "fi": "karhu", "sv": "en björn" }
+      ]
+    },
+    {
+      "id": "esimerkki-koti",
+      "name": "Koti (esimerkki)",
+      "words": [
+        { "fi": "talo", "sv": "ett hus" },
+        { "fi": "huone", "sv": "ett rum" },
+        { "fi": "keittiö", "sv": "ett kök" },
+        { "fi": "pöytä", "sv": "ett bord" },
+        { "fi": "tuoli", "sv": "en stol" },
+        { "fi": "sänky", "sv": "en säng" },
+        { "fi": "ikkuna", "sv": "ett fönster" },
+        { "fi": "ovi", "sv": "en dörr" }
+      ]
+    }
+  ]
+}
