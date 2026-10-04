@@ -129,7 +129,7 @@ function openHome() {
   $("learned-count").textContent = `${learned} / ${total}`;
   $("learned-bar").style.width = `${(learned / total) * 100}%`;
   $("goal-message").textContent = goalMessage(learned, total);
-  $("start-sub").textContent = `${Math.min(ROUND_SIZE, total)} sanaa, vaikeimmat ensin`;
+  $("start-sub").textContent = `${Math.min(ROUND_SIZE, total)} sanaa`;
   $("exam-sub").textContent = `Kirjoita kaikkien ${total} sanan kaikki muodot`;
   $("exam-reward").textContent = progress.isExamReady(list.id)
     ? "✓ Olet valmis koulun kokeeseen!"
